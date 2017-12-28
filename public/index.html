@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>sew&so</title>
+    <link href="https://fonts.googleapis.com/css?family=Barlow+Condensed:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link rel="stylesheet" href="./css/master.css">
+  </head>
+  <body class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
+
+    <!--        LANDING PAGE         -->
+    <div class="landingPage flexRow" ng-if="currentPage === 'landingPage'">
+      <div class="homePageContainer flexCol">
+        <div class="topHomePage flexRow">
+          <!-- <div class="homePageNav flexRow">
+            <div class="hamburgerMenu pointer"></div>
+            <div class="logInOrSignUp flexRow">
+              <p class="pointer" ng-click='logIn()'>Log In</p>
+              <p class="pointer">Sign Up</p>
+            </div>
+          </div> -->
+          <div class="landingPageButtonSection flexRow">
+            <div class="landingPageBtns flexRow">
+              <div class="lpBtn flexRow brittanyPage" ng-click='logIn("sew_products")'><p>BRITTANY PAGE</p></div>
+              <div class="lpBtn flexRow brandiPage" ng-click='logIn("crochet_products")'><p>BRANDI PAGE</p></div>
+              <div class="lpBtn flexRow signUp"><p>SIGN UP</p></div>
+              <div class="lpBtn flexRow loginBtn"><p>SIGN IN</p></div>
+            </div>
+          </div>
+          <div class="landingPageColorOne"></div>
+          <div class="landingPageColorTwo"></div>
+          <div class="homeImg">
+            <img src="./images/model1.png" alt="">
+          </div>
+        </div>
+        <div class="bottomHomePage">
+
+        </div>
+      </div>
+    </div>
+
+    <!-- HOME NAV SLIDER -->
+    <div class="homeNavSlider"></div>
+
+    <div class="container" ng-if="secondPageNavOptions.includes(currentPage.toUpperCase()) || currentPage === 'loading'">
+
+      <!--        NAVIGATOIN       -->
+      <div class="navigationBar flexRow">
+        <div class="navHolder flexRow">
+          <p data={{$index}} ng-repeat="nav in navOptions track by $index" class="navOptions pointer" ng-click='navigatePage($event)'>{{nav}}</p>
+        </div>
+        <div class="imgHolder flexRow">
+          <img class="customize customizeDirector pointer" src="{{customIcon}}" alt="" ng-mouseover="customMouseOver()" ng-mouseleave="customMouseLeave()">
+          <p>click to customize</p>
+          <img class="point" src="./images/point.png" alt="">
+        </div>
+      </div>
+
+      <!--        PAGEBODY         -->
+      <div class="pageBody hidden flexRow">
+
+        <!-- NAV SLIDER -->
+        <div class="navSlider"></div>
+
+        <!--        SIDEBAR         -->
+        <div class="sideBar flexRow">
+          <div class="sideBarLiner">
+            <div class="sideBarOption flexCol cart">
+              <div class="cartItemHeading flexRow">
+                <h1>CART</h1>
+                <img src="./images/shoppingBag.png" alt="">
+                <div class="itemNumber flexRow"><p>{{cartQuantity}}</p></div>
+              </div>
+
+              <!--        CART SECTION         -->
+              <div class="cartItemsHolder">
+                <div id={{$index}} class="cartItem flexRow" ng-repeat="cartItem in cartItems track by $index">
+                  <img src={{cartItem.img}} alt="">
+                  <div class="cartItemDescriptionSection">
+                    <h2 class="cartItemDescription">{{cartItem.name}}</h2>
+                    <h2 class="cartItemPrice">{{cartItem.price}}</h2>
+                  </div>
+                  <div data-cartId={{$index}} class="xBtn pointer" ng-click='removeFromCart($index)'><p>x</p></div>
+                </div>
+              </div>
+
+            </div>
+
+            <!--        CATEGORIES         -->
+            <div class="sideBarOption flexCol categories" ng-if="currentPage === 'brands' || currentPage === brittanyPageNavOptionName.toLowerCase() || currentPage === brandiPageNavOptionName.toLowerCase() || currentPage === 'loading'">
+              <h1>CATEGORIES</h1>
+
+              <div class="categoriesFilter flexRow" ng-repeat="category in filters.categories track by $index">
+                <div data-category={{$index}} class="checkBox pointer" ng-click='checkboxClick($event, $index)'></div>
+                <div class="filterText">{{category}}</div>
+              </div>
+
+            </div>
+
+            <!--        COLORS         -->
+            <!-- <div class="sideBarOption flexCol colors" ng-if="currentPage === 'brands' || currentPage === brittanyPageNavOptionName.toLowerCase() || currentPage === brandiPageNavOptionName.toLowerCase() || currentPage === 'loading'">
+              <h1>COLORS</h1>
+              <div class="colorSection flexRow">
+
+                <div class="colorStrip flexRow" ng-repeat="color in filters.colors track by $index">
+                  <div data-color={{$index}} class="colorCircle pointer" style="background-color: {{color.hex}}" ng-click='colorClick($event, $index)'></div>
+                  <div data-color={{$index}} class="filterText pointer" ng-click='colorClick($event, $index)'>{{color.name}}</div>
+                </div>
+
+              </div>
+            </div> -->
+
+            <!--        SIZES         -->
+            <!-- <div class="sideBarOption flexCol sizes" ng-if="currentPage === 'brands'">
+              <h1>SIZES</h1>
+              <div class="sideBarSection flexRow">
+
+                <div class="sideBarStrip flexRow" ng-repeat="size in filters.sizes">
+                  <div data-size={{$index}} class="checkBox pointer" ng-click='checkboxClick($event, $index)'></div>
+                  <div class="filterText">{{size}}</div>
+                </div>
+
+              </div>
+            </div> -->
+
+          </div>
+        </div>
+
+        <!--        ITEM SECTION         -->
+        <div class="itemSection flexRow" ng-if="currentPage === 'brands' || currentPage === brittanyPageNavOptionName.toLowerCase() || currentPage === brandiPageNavOptionName.toLowerCase()">
+          <div id={{$index}} class="itemBox flexCol" ng-if="productsSet" ng-class={{dynamicClasses}}  ng-repeat="product in products track by $index" ng-mouseover="showOptions($event)" ng-mouseleave="hideOptions($event)">
+
+            <div id={{$index}} class="itemPreview">
+              <img data={{$index}} src={{product.img}} class="itemImage itemImg" alt="">
+              <div class="itemDesciption flexRow">
+                <div class="desciption flexCol">
+                  <h2>{{product.name}}</h2>
+                  <p>{{product.desciption}}</p>
+                </div>
+                <div class="itemPriceSection flexRow">
+                  <h2>{{product.price}}</h2>
+                </div>
+              </div>
+            </div>
+
+            <div id={{$index}} class="options">
+              <img src={{product.img}} class="itemImage" alt="">
+              <div class="itemDesciption flexRow">
+                <div class="desciption flexCol">
+                  <h2>{{product.name}}</h2>
+                  <p>{{product.desciption}}</p>
+                  <p class="details">{{product.details}}</p>
+                </div>
+                <div class="itemPriceSection flexRow">
+                  <h2>{{product.price}}</h2>
+                </div>
+              </div>
+              <div class="optionsBgColor"></div>
+              <div class="optionsScreen flexRow">
+                <div ng-if='clickIt'>
+                  <img class="customizeItems pointer" src={{customIcon}} alt="">
+                  <div view class="pointer"></div>
+                  <div tocart class="pointer"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!--       HOME         -->
+        <div class="itemSection flexRow"  ng-if="currentPage === 'home'">
+          <h1>HOME</h1>
+        </div>
+
+        <!--       DESIGNERS         -->
+        <div class="itemSection flexRow"  ng-if="currentPage === 'designers'">
+          <h1>DESIGNERS</h1>
+        </div>
+
+        <!--       CONTACT US        -->
+        <div class="itemSection flexRow"  ng-if="currentPage === 'contact'">
+          <h1>CONTACT US</h1>
+        </div>
+
+        <!--       LOADING SCREEN     -->
+        <div class="itemSection flexRow"  ng-if="currentPage === 'loading'">
+          <!-- <h1>loading...</h1> -->
+        </div>
+
+      </div>
+
+
+    </div>
+
+    <!--        GALLERY         -->
+    <div class="shoppingCartBigView flexRow">
+      <div class="shadedArea" ng-click="hideBigView()"></div>
+      <div class="bigView flexRow">
+        <div class="leftArrow flexRow pointer" ng-click='galleryLeftClick()'><p>&#x276E;</p></div>
+        <div class="galleryImgSection flexRow">
+          <img src={{currentSlideImg}} alt="">
+        </div>
+        <div class="rightArrow flexRow pointer" ng-click='galleryRightClick()'><p>&#x276F;</p></div>
+        <div class="galleryOptions flexCol">
+          <div class="xBtnGalleryView flexRow pointer" ng-click="hideBigView()"><p>&#xd7;</p></div>
+          <div class="addCartBtnGalleryView flexRow pointer">
+            <img src="./images/shoppingBag.png" alt="" ng-click="moveToCart(currentImgEvent,currentIndex)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <style type="text/css">
+      ::-webkit-scrollbar-thumb,
+      .navSlider,
+      .homeNavSlider,
+      .itemNumber,
+      .optionsBgColor { background-color: {{themeColor}}; }
+
+      .landingPageColorOne { background-color: {{themeColorOne}}; }
+
+      .landingPageColorTwo { background-color: {{themeColorTwo}};}
+
+      .itemPriceSection,
+      .cartItemPrice,
+      .addToCartBtn:hover,
+      .viewBtn:hover,
+      .xBtn p:hover,
+      .imgHolder p { color: {{themeColor}}; }
+
+      .navigationBar { border-bottom: 0.1em solid {{themeBorderColor}}; }
+
+      .sideBar { border-right: 0.1em solid {{themeBorderColor}}; }
+
+      .checkBoxChecked {
+        background-color: {{themeColor}};
+        border-color: {{themeColor}};
+      }
+
+      .colorCircleSelected { border: 4px solid #777; }
+
+      .lpBtn:hover { background-color: {{landingPageBtnHoverColor}}; }
+      .lpBtn { background-color: {{landingPageBtnColor}}; }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script type="text/javascript" src="./js/databaseBrittany.js"></script>
+    <script type="text/javascript" src="./js/databaseBrandi.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+  </body>
+</html>
