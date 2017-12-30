@@ -2,7 +2,7 @@
 
 var app = angular.module('app', []);
 
-app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animate', 'data', 'task', 'navigate', function($scope, $rootScope, $interval, $timeout, animate, data, task, navigate){
+app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', 'navigate', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task, navigate){
 
   $scope.name = 'name';
   $scope.inLargeView = false;
@@ -10,7 +10,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
   $rootScope.products = data.products;
   $scope.cartItems = data.cartItems;
   $scope.filters = data.filters;
-  $scope.navOptions = data.navOptions;
   $scope.secondPageNavOptions = ['BRANDS', 'BRITTANY', 'BRANDI', 'DESIGNERS', 'CONTACT'];
 
   $scope.showOptions = (e) => {
@@ -106,9 +105,9 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
   }
   $scope.logIn = (productName) => {
     //insert variable options in navigation bar
-    const isBrandsIncludedInNav = $scope.navOptions.includes($rootScope.brittanyPageNavOptionName);
+    const isBrandsIncludedInNav = $rootScope.navOptions.includes($rootScope.brittanyPageNavOptionName);
     if(!isBrandsIncludedInNav){
-      $scope.navOptions.splice(1, 0, $rootScope.brittanyPageNavOptionName, $rootScope.brandiPageNavOptionName);
+      $rootScope.navOptions.splice(1, 0, $rootScope.brittanyPageNavOptionName, $rootScope.brandiPageNavOptionName);
     }
 
     if(productName === 'crochet_products'){ $scope.themeColor = 'rgb(91, 148, 239)' }
@@ -120,7 +119,49 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
     $rootScope.products = data.products;
     $rootScope.productsSet = true;
   }
+  $scope.customMouseLeave = () => {
+    $('.imgHolder p').css('opacity', 0);
+    if($scope.inLargeView){
+        $('.customizeDirector').css('opacity', 0.4);
+    }
+  }
+  $scope.signUpLandingPageBtn = () => {
+    animate.toSignFormPage('signup');
+  }
+  $scope.signInLandingPageBtn = () => {
+    animate.toSignFormPage('signin');
+  }
+  $scope.signUpButtonOption = () => {
+    $rootScope.currentPage = "signup";
+    $rootScope.signUp = "signOption";
+    $rootScope.signIn = "";
+  }
+  $scope.signInButtonOption = () => {
+    $rootScope.currentPage = "signin";
+    $rootScope.signUp = "";
+    $rootScope.signIn = "signOption";
+  }
+  $scope.signUpButton = () => {
+    const firstname = $('.signUpFirstname').val();
+    const lastname = $('.signUpLastname').val();
+    const username = $('.signUpUsername').val();
+    const password = $('.signUpPassword').val();
+    const url = "/register";
+    const signUpObj = { firstname: firstname, lastname: lastname, username: username, password: password }
+    backend.register(signUpObj, url);
+  }
+  $scope.signInButton = () => {
+    const username = $('.signInUsername').val();
+    const password = $('.signInPassword').val();
+    const url = "/login";
+    const signInObj = { username: username, password: password }
+    backend.loginRequest(signInObj, url);
+  }
+  $scope.backFromSignFormPage = () => {
+    animate.backFromSignFormPage();
+  }
 
+  $rootScope.navOptions = data.navOptions;
   $rootScope.bind = true;
   $rootScope.isIntervalInProgress = false;
   $rootScope.productsSet = false;
@@ -129,6 +170,8 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
   $rootScope.brittanyPageNavOptionName = 'BRITTANY';
   $rootScope.brandiPageNavOptionName = 'BRANDI';
   $rootScope.currentPage = "landingPage";
+  $rootScope.signUp = "signOption";
+  $rootScope.signIn = "";
   $rootScope.landingPageBtnHoverColor = '#430909';
   $rootScope.landingPageBtnColor = '#ea6262';
   $rootScope.landingPageBtnBorderColor = '#e74b4b';
@@ -154,6 +197,162 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'animat
 
 }]);
 
+app.service("backend", function($http, $rootScope, $interval, $timeout, task, data, animate){
+  this.loginRequest = (signInObj, url) => {
+    $http({
+      method: 'POST',
+      url: url,
+      data: JSON.stringify(signInObj),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(
+        (success) => { successCallback(success) },
+        (error) => { errorCallback(error.data) }
+      );
+
+    const successCallback = (success) => {
+      console.log("successfully logged in");
+
+      debugger
+      //set profile information
+      this.setUserInfo(success)
+
+      //insert variable options in navigation bar
+      const isBrandsIncludedInNav = $rootScope.navOptions.includes($rootScope.brittanyPageNavOptionName);
+      if(!isBrandsIncludedInNav){
+        $rootScope.navOptions.splice(1, 0, $rootScope.brittanyPageNavOptionName, $rootScope.brandiPageNavOptionName);
+      }
+      $rootScope.themeColor = 'rgb(237, 125, 125)';
+      task.setThemeColors("sew_products");
+      data.setProducts("sew_products");
+      animate.logIn($rootScope.themeColor, "sew_products");
+      $rootScope.products = data.products;
+      $rootScope.productsSet = true;
+    }
+
+    const errorCallback = () => {
+      console.log("error logging in");
+    }
+  };
+  this.register = (signUpObj, url) => {
+    $http({
+      method: 'POST',
+      url: url,
+      data: JSON.stringify(signUpObj),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(
+        (success) => { successCallback(success) },
+        (error) => { errorCallback(error.data) }
+      );
+
+    const successCallback = (success) => {
+      console.log("successfully registered");
+
+      $('.signFormMessage').fadeIn();
+
+      $rootScope.currentPage = "signin";
+      $rootScope.signUp = "";
+      $rootScope.signIn = "signOption";
+    }
+
+    const errorCallback = () => {
+      console.log("error registering");
+    }
+  }
+  this.deleteacc = (id, url) => {
+
+    const data = {
+      id: id
+    }
+
+    $http({
+      method: 'DELETE',
+      url: url,
+      data: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(
+        (success) => { successCallback(success) },
+        (error) => { errorCallback(error.data) }
+      );
+
+    const successCallback = (success) => {
+      console.log('account deleted');
+    }
+
+    const errorCallback = () => {
+      console.log('error deleting account');
+    }
+  }
+  this.email = (name, email, subject, message, url) => {
+    let sendMessage = "";
+    sendMessage += '<style> div { color: #eee;background-color: #333;font-family: "Barlow Semi Condensed", sans-serif;padding: 1em;margin: 0 auto;width: 20em; } p { font-size: 1.2em; } </style>';
+    sendMessage += "<div>";
+    sendMessage += "<p>name: <span>" + name + "</span></p>";
+    sendMessage += "<p>contact: <span>" + email + "</span></p>";
+    sendMessage += "<p>subject: <span>" + subject + "</span></p>";
+    sendMessage += "<p>message: </p>";
+    sendMessage += "<p>" + message + " </p>";
+    sendMessage += "</div>";
+
+    const data = {
+      name: name,
+      email: 'letsbuildyourwebsite@outlook.com',
+      subject: subject,
+      message: sendMessage
+    }
+
+    $http({
+      method: 'POST',
+      url: url,
+      data: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(
+        (success) => { successCallback(success) },
+        (error) => { errorCallback(error.data) }
+      );
+
+    const successCallback = () => {
+      console.log('email sent');
+    }
+
+    const errorCallback = (err) => {
+      console.log(err);
+    }
+  }
+  this.sendtext = (userName, userNumber, userMessage, url) => {
+    const sendMessage = 'contact: ' + userNumber + ' message: ' + userMessage;
+
+    const data = {
+      userName: userName,
+      userNumber: '8147530157',
+      userMessage: sendMessage,
+    }
+
+    $http({
+      method: 'POST',
+      url: url,
+      data: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(
+        (success) => { successCallback(success) },
+        (error) => { errorCallback(error.data) }
+      );
+
+    const successCallback = () => {
+      console.log('text sent');
+    }
+
+    const errorCallback = (err) => {
+      console.log(err);
+    }
+  }
+  this.setUserInfo = (userObj) => {
+    $rootScope.user_firstname = userObj.data.firstname;
+    $rootScope.user_lastname = userObj.data.lastname;
+    $rootScope.user_name = userObj.data.username;
+    $rootScope._id = userObj.data._id;
+  };
+});
+
 app.service('animate', function($rootScope, $timeout, $interval, data, task){
   this.logIn = (themeColor, productName) => {
     $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
@@ -171,6 +370,37 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
       this.customButton();
       // const thisNav = $('.navOptions');
       // thisNav.css('color', themeColor);
+      $('.homeNavSlider').css('left', '-100%');
+      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
+    }, 800);
+  }
+  this.toSignFormPage = (page) => {
+    $rootScope.themeColor = 'rgb(237, 125, 125)';
+    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
+    const signup = () => {
+      $rootScope.currentPage = 'signup';
+      $rootScope.currentPage = "signup";
+      $rootScope.signUp = "signOption";
+      $rootScope.signIn = "";
+    }
+    const signin = () => {
+      $rootScope.currentPage = 'signin';
+      $rootScope.currentPage = "signin";
+      $rootScope.signUp = "";
+      $rootScope.signIn = "signOption";
+    }
+    $timeout(() => {
+      (page === 'signup') ? signup() : signin();
+      $('.homeNavSlider').css('left', '-100%');
+      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
+    }, 800);
+  }
+  this.backFromSignFormPage = () => {
+    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
+    $timeout(() => {
+      $rootScope.currentPage = "landingPage";
+      $rootScope.landingPageBtnHoverColor = '#430909';
+      $rootScope.landingPageBtnColor = '#ea6262';
       $('.homeNavSlider').css('left', '-100%');
       $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
     }, 800);
@@ -433,7 +663,7 @@ app.service('task', function($rootScope, $interval, $timeout, data){
         opacity = !opacity;
       }
     }, 1000);
-
+    $('.signFormMessage').hide();
     // $timeout(() => { $('.navOptions[data=1]').css('color', themeColor) });
   }
   this.populateImgsOnPage = () => {

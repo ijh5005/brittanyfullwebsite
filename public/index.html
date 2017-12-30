@@ -9,6 +9,47 @@
   </head>
   <body class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
 
+    <div class="triangle-bottomright-holder flexRow" ng-if="currentPage === 'signup' || currentPage === 'signin'">
+      <div class="signFormBackBtn flexRow pointer" ng-click='backFromSignFormPage()'>
+        <p>&#x276E;</p>
+      </div>
+      <div class="triangle-bottomright"></div>
+    </div>
+
+    <!--       SIGN IN AND SIGN UP PAGE     -->
+    <div class="signFormPage flexCol" ng-if="currentPage === 'signup' || currentPage === 'signin'">
+      <div class="signSelect flexRow">
+        <div class="signUpBlock flexRow pointer" ng-class='signUp' ng-click='signUpButtonOption()'>
+          <p>SIGN UP</p>
+        </div>
+        <div class="signInBlock flexRow pointer" ng-class='signIn' ng-click='signInButtonOption()'>
+          <p>SIGN IN</p>
+        </div>
+      </div>
+      <div class="signFormMessage">
+        <p>Thanks For Registering! Try Signing in</p>
+      </div>
+      <div class="formLiner flexCol">
+        <form class="signUpForm flexCol" action="/register" method="post" ng-if="currentPage === 'signup'">
+          <input class="signUpFirstname" type="text" name="firstname" value="" placeholder="firstname">
+          <input class="signUpLastname" type="text" name="lastname" value="" placeholder="lastname">
+          <input class="signUpUsername" type="text" name="username" value="" placeholder="username">
+          <input class="signUpPassword" type="password" name="password" value="" placeholder="password">
+          <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signUpButton()'>
+            <p>submit</p>
+          </div>
+        </form>
+        <form class="signInForm flexCol" action="/login" method="post" ng-if="currentPage === 'signin'">
+          <div class="divLiner"></div>
+          <input class="signInUsername" type="text" name="username" value="" placeholder="username">
+          <input class="signInPassword" type="password" name="password" value="" placeholder="password">
+          <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signInButton()'>
+            <p>submit</p>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!--        LANDING PAGE         -->
     <div class="landingPage flexRow" ng-if="currentPage === 'landingPage'">
       <div class="homePageContainer flexCol">
@@ -24,14 +65,14 @@
             <div class="landingPageBtns flexRow">
               <div class="lpBtn flexRow brittanyPage" ng-click='logIn("sew_products")'><p>BRITTANY PAGE</p></div>
               <div class="lpBtn flexRow brandiPage" ng-click='logIn("crochet_products")'><p>BRANDI PAGE</p></div>
-              <div class="lpBtn flexRow signUp"><p>SIGN UP</p></div>
-              <div class="lpBtn flexRow loginBtn"><p>SIGN IN</p></div>
+              <div class="lpBtn flexRow signUp" ng-click="signUpLandingPageBtn()"><p>SIGN UP</p></div>
+              <div class="lpBtn flexRow loginBtn" ng-click="signInLandingPageBtn()"><p>SIGN IN</p></div>
             </div>
           </div>
           <div class="landingPageColorOne"></div>
           <div class="landingPageColorTwo"></div>
           <div class="homeImg">
-            <img src="./images/model1.png" alt="">
+            <!-- <img src="./images/model1.png" alt=""> -->
           </div>
         </div>
         <div class="bottomHomePage">

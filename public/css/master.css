@@ -73,6 +73,138 @@ body {
   transition: left 0.5s;
 }
 
+/*SIGN UP AND SIGN IN PAGE*/
+
+.signFormPage {
+  border: 0.5em solid #ed7d7d;
+  border-radius: 1em;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  height: 50em;
+  justify-content: space-between;
+  position: relative;
+  width: 34em;
+}
+
+.signSelect {
+  background-color: transparent;
+  color: #000;
+  height: 4em;
+  margin: 5em 0;
+  width: 20em;
+}
+
+.formLiner {
+  height: 70%;
+  justify-content: flex-start;
+}
+
+.signUpForm,
+.signInForm {
+  height: 80%;
+  justify-content: space-between;
+  margin-bottom: 3em;
+}
+
+.divLiner {
+  height: 5em;
+  width: 3em;
+}
+
+.signUpForm input,
+.signInForm input {
+  border: 0.1em solid #ed7d7d;
+  border-radius: 0.2em;
+  color: #ed7d7d;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.5em;
+  height: 2em;
+  letter-spacing: 3px;
+  outline: 0;
+  outline-color: #ed7d7d;
+  padding-left: 0.6em;
+  width: 17em;
+}
+
+input::placeholder {
+  color: #ed7d7d;
+  letter-spacing: 3px;
+  opacity: 0.4;
+}
+
+.submit {
+  background-color: #ed7d7d;
+  border-radius: 0.2em;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  color: #fff;
+  height: 3.8em;
+  width: 27em;
+}
+
+.submit p {
+  font-size: 1.8em;
+}
+
+.submit:focus {
+  background-color: #56d39d;
+}
+
+.triangle-bottomright-holder {
+  align-items: flex-end;
+  height: 100%;
+  justify-content: flex-end;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.triangle-bottomright {
+  border-bottom: 23em solid #ed7d7d;
+  border-left: 55em solid transparent;
+  height: 0;
+  margin: 0 1em 1em 0;
+  width: 0px;
+}
+
+.signFormBackBtn p {
+  font-size: 2em;
+}
+
+.signFormBackBtn {
+  border: 0.1em solid #ed7d7d;
+  border-radius: 50%;
+  color: #ed7d7d;
+  height: 4em;
+  left: 3em;
+  position: absolute;
+  top: 3em;
+  width: 4em;
+}
+
+.signUpBlock p,
+.signInBlock p {
+  color: #222;
+  font-size: 2em;
+  font-weight: 600;
+}
+
+.signOption {
+  background-color: #ed7d7d;
+  border-radius: 0.2em;
+  color: #fff;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+}
+
+.signUpBlock,
+.signInBlock {
+  height: 100%;
+  width: 50%;
+}
+
+.signFormMessage {
+  display: none;
+}
+
 /*LANDING PAGE*/
 
 .landingPage {
