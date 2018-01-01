@@ -9,8 +9,11 @@
   </head>
   <body class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
 
-    <div class="triangle-bottomright-holder flexRow" ng-if="currentPage === 'signup' || currentPage === 'signin'">
-      <div class="signFormBackBtn flexRow pointer" ng-click='backFromSignFormPage()'>
+    <div class="triangle-bottomright-holder flexRow" ng-if="currentPage === 'signup' || currentPage === 'signin' || currentPage === 'shoppingCart'">
+      <div class="signFormBackBtn flexRow pointer" ng-click='backFromSignFormPage()' ng-if="currentPage === 'signup' || currentPage === 'signin'">
+        <p>&#x276E;</p>
+      </div>
+      <div class="signFormBackBtn flexRow pointer" ng-click='backFromShoppingCart()' ng-if="currentPage === 'shoppingCart'">
         <p>&#x276E;</p>
       </div>
       <div class="triangle-bottomright"></div>
@@ -51,7 +54,7 @@
     </div>
 
     <!--        LANDING PAGE         -->
-    <div class="landingPage flexRow" ng-if="currentPage === 'landingPage'">
+    <div class="landingPage flexRow" ng-if="currentPage === 0">
       <div class="homePageContainer flexCol">
         <div class="topHomePage flexRow">
           <!-- <div class="homePageNav flexRow">
@@ -63,8 +66,8 @@
           </div> -->
           <div class="landingPageButtonSection flexRow">
             <div class="landingPageBtns flexRow">
-              <div class="lpBtn flexRow brittanyPage" ng-click='logIn("sew_products")'><p>BRITTANY PAGE</p></div>
-              <div class="lpBtn flexRow brandiPage" ng-click='logIn("crochet_products")'><p>BRANDI PAGE</p></div>
+              <div class="lpBtn flexRow brittanyPage" ng-click='logIn(1)'><p>BRITTANY PAGE</p></div>
+              <div class="lpBtn flexRow brandiPage" ng-click='logIn(2)'><p>BRANDI PAGE</p></div>
               <div class="lpBtn flexRow signUp" ng-click="signUpLandingPageBtn()"><p>SIGN UP</p></div>
               <div class="lpBtn flexRow loginBtn" ng-click="signInLandingPageBtn()"><p>SIGN IN</p></div>
             </div>
@@ -84,12 +87,13 @@
     <!-- HOME NAV SLIDER -->
     <div class="homeNavSlider"></div>
 
-    <div class="container" ng-if="secondPageNavOptions.includes(currentPage.toUpperCase()) || currentPage === 'loading'">
+    <!-- MAIN PAGE -->
+    <div class="container" ng-if="mainPageIndexes.includes(currentPage)">
 
       <!--        NAVIGATOIN       -->
       <div class="navigationBar flexRow">
         <div class="navHolder flexRow">
-          <p data={{$index}} ng-repeat="nav in navOptions track by $index" class="navOptions pointer" ng-click='navigatePage($event)'>{{nav}}</p>
+          <p data={{$index}} ng-repeat="nav in navOptions track by $index" class="navOptions pointer" ng-click='navigate($event)'>{{nav}}</p>
         </div>
         <div class="imgHolder flexRow">
           <img class="customize customizeDirector pointer" src="{{customIcon}}" alt="" ng-mouseover="customMouseOver()" ng-mouseleave="customMouseLeave()">
@@ -105,7 +109,7 @@
         <div class="navSlider"></div>
 
         <!--        SIDEBAR         -->
-        <div class="sideBar flexRow">
+        <div class="sideBar flexRow" ng-hide="currentPage === 5">
           <div class="sideBarLiner">
             <div class="sideBarOption flexCol cart">
               <div class="cartItemHeading flexRow">
@@ -129,7 +133,7 @@
             </div>
 
             <!--        CATEGORIES         -->
-            <div class="sideBarOption flexCol categories" ng-if="currentPage === 'brands' || currentPage === brittanyPageNavOptionName.toLowerCase() || currentPage === brandiPageNavOptionName.toLowerCase() || currentPage === 'loading'">
+            <div class="sideBarOption flexCol categories" ng-if="productPageIndexes.includes(currentPage) || currentPage === 'loading'">
               <h1>CATEGORIES</h1>
 
               <div class="categoriesFilter flexRow" ng-repeat="category in filters.categories track by $index">
@@ -169,8 +173,8 @@
         </div>
 
         <!--        ITEM SECTION         -->
-        <div class="itemSection flexRow" ng-if="currentPage === 'brands' || currentPage === brittanyPageNavOptionName.toLowerCase() || currentPage === brandiPageNavOptionName.toLowerCase()">
-          <div id={{$index}} class="itemBox flexCol" ng-if="productsSet" ng-class={{dynamicClasses}}  ng-repeat="product in products track by $index" ng-mouseover="showOptions($event)" ng-mouseleave="hideOptions($event)">
+        <div class="itemSection flexRow" ng-if="productPageIndexes.includes(currentPage)">
+          <div id={{$index}} class="itemBox flexCol" ng-repeat="product in pageProducts track by $index" ng-mouseover="showOptions($event)" ng-mouseleave="hideOptions($event)">
 
             <div id={{$index}} class="itemPreview">
               <img data={{$index}} src={{product.img}} class="itemImage itemImg" alt="">
@@ -207,21 +211,69 @@
               </div>
             </div>
           </div>
+
         </div>
 
-        <!--       HOME         -->
-        <div class="itemSection flexRow"  ng-if="currentPage === 'home'">
-          <h1>HOME</h1>
-        </div>
 
         <!--       DESIGNERS         -->
-        <div class="itemSection flexRow"  ng-if="currentPage === 'designers'">
+        <div class="itemSection flexRow"  ng-if="currentPage === 3">
           <h1>DESIGNERS</h1>
         </div>
 
         <!--       CONTACT US        -->
-        <div class="itemSection flexRow"  ng-if="currentPage === 'contact'">
+        <div class="itemSection flexRow"  ng-if="currentPage === 4">
           <h1>CONTACT US</h1>
+        </div>
+
+        <!--       SHOPPING CART        -->
+        <div class="itemSection checkoutSection flexRow"  ng-if="currentPage === 5">
+          <div class="cartBagContent">
+
+            <div class="reviewText flexRow">
+              <p>REVIEW ITEMS IN CART</p>
+              <p id="total">Total ${{checkoutItemsTotal}}</p>
+            </div>
+
+            <div class="reviewItems">
+              <div class="itemToReview flexRow" ng-repeat='checkoutItem in checkoutItems'>
+                <div class="reviewImg flexRow">
+                  <img src={{checkoutItem.img}} alt="">
+                </div>
+                <div class="reviewPrice flexRow">
+                  <p>{{checkoutItem.price}}</p>
+                </div>
+                <div class="reviewQuantity flexCol">
+                  <div class="quantityNumber flexRow flexRow">
+                    <p>1</p>
+                  </div>
+                  <div class="quantityChange flexRow">
+                    <div class="increment flexRow">
+                      <p>+</p>
+                    </div>
+                    <div class="decrement flexRow">
+                      <p>-</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="personalInformationForm flexCol">
+            <div class="formLiner flexCol">
+              <form class="signUpForm flexCol" action="/register" method="post">
+                <input class="cartForms cartFullname" type="text" name="firstname" value="" placeholder="full name">
+                <input class="cartForms cartAddress" type="text" name="username" value="" placeholder="address">
+                <input class="cartForms cartCity" type="text" name="password" value="" placeholder="city">
+                <input class="cartForms cartState" type="text" name="username" value="" placeholder="state">
+                <input class="cartForms cartZipcode" type="text" name="username" value="" placeholder="zipcode">
+                <input class="cartForms cartEmailAdress" type="text" name="password" value="" placeholder="email adress">
+              </form>
+              <div data="signUpSubmit" class="submit flexRow pointer" ng-click='continueInCart()'>
+                <p>PROCEED TO CHECKOUT</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!--       LOADING SCREEN     -->
@@ -252,7 +304,104 @@
       </div>
     </div>
 
+    <div class="shoppingCart flexCol" ng-if="currentPage === 'shoppingCart'">
+      <div class="creditCard flexRow">
+        <div class="cardInfo flexRow">
 
+          <script src="https://js.stripe.com/v3/"></script>
+
+          <form class="cartForm" action="/charge" method="post" id="payment-form">
+            <div class="form-row">
+              <div id="card-element">
+                <!-- a Stripe Element will be inserted here. -->
+              </div>
+
+              <!-- Used to display form errors -->
+              <div id="card-errors" role="alert"></div>
+            </div>
+
+            <button class="shoppingCartBtn flexRow"><p>Submit Payment</p></button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      (() => {
+          // Create a Stripe client
+          var stripe = Stripe('pk_test_fjLtmEb3KeopnnS7MoQ7ERMF');
+
+          // Create an instance of Elements
+          var elements = stripe.elements();
+
+          // Custom styling can be passed to options when creating an Element.
+          // (Note that this demo uses a wider set of styles than the guide below.)
+          var style = {
+            base: {
+              color: '#32325d',
+              lineHeight: '18px',
+              fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+              fontSmoothing: 'antialiased',
+              fontSize: '16px',
+              '::placeholder': {
+                color: '#aab7c4'
+              }
+            },
+            invalid: {
+              color: '#fa755a',
+              iconColor: '#fa755a'
+            }
+          };
+
+          // Create an instance of the card Element
+          var card = elements.create('card', {style: style});
+
+          // Add an instance of the card Element into the `card-element` <div>
+          card.mount('#card-element');
+
+          // Handle real-time validation errors from the card Element.
+          card.addEventListener('change', function(event) {
+            var displayError = document.getElementById('card-errors');
+            if (event.error) {
+              displayError.textContent = event.error.message;
+            } else {
+              displayError.textContent = '';
+            }
+          });
+
+          // Handle form submission
+          var form = document.getElementById('payment-form');
+          form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            stripe.createToken(card).then(function(result) {
+              if (result.error) {
+                // Inform the user if there was an error
+                var errorElement = document.getElementById('card-errors');
+                errorElement.textContent = result.error.message;
+              } else {
+                // Send the token to your server
+                stripeTokenHandler(result.token);
+              }
+            });
+          });
+
+          function stripeTokenHandler(token) {
+            // Insert the token ID into the form so it gets submitted to the server
+            var form = document.getElementById('payment-form');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'stripeToken');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+
+            // Submit the form
+            form.submit();
+          }
+        })()
+
+    </script>
 
     <style type="text/css">
       ::-webkit-scrollbar-thumb,
@@ -270,11 +419,12 @@
       .addToCartBtn:hover,
       .viewBtn:hover,
       .xBtn p:hover,
-      .imgHolder p { color: {{themeColor}}; }
+      .imgHolder p ,
+      .navHighlight { color: {{themeColor}}; }
 
-      .navigationBar { border-bottom: 0.1em solid {{themeBorderColor}}; }
+      .navigationBar { border-bottom: 0.1em solid {{borderThemeColor}}; }
 
-      .sideBar { border-right: 0.1em solid {{themeBorderColor}}; }
+      .sideBar { border-right: 0.1em solid {{borderThemeColor}}; }
 
       .checkBoxChecked {
         background-color: {{themeColor}};
