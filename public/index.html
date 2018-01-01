@@ -97,8 +97,8 @@
         </div>
         <div class="imgHolder flexRow">
           <img class="customize customizeDirector pointer" src="{{customIcon}}" alt="" ng-mouseover="customMouseOver()" ng-mouseleave="customMouseLeave()">
-          <p>click to customize</p>
-          <img class="point" src="./images/point.png" alt="">
+          <p  ng-hide="currentPage === 5">click to customize</p>
+          <img class="point" src="./images/point.png" alt="" ng-hide="currentPage === 5">
         </div>
       </div>
 
@@ -109,7 +109,7 @@
         <div class="navSlider"></div>
 
         <!--        SIDEBAR         -->
-        <div class="sideBar flexRow" ng-hide="currentPage === 5">
+        <div class="sideBar flexRow" ng-hide="currentPage === 5 || currentPage === 'loading'">
           <div class="sideBarLiner">
             <div class="sideBarOption flexCol cart">
               <div class="cartItemHeading flexRow">
@@ -124,7 +124,7 @@
                   <img src={{cartItem.img}} alt="">
                   <div class="cartItemDescriptionSection">
                     <h2 class="cartItemDescription">{{cartItem.name}}</h2>
-                    <h2 class="cartItemPrice">{{cartItem.price}}</h2>
+                    <h2 class="cartItemPrice"><span>{{cartItem.price}}</span><span ng-if="cartItem.multiple"> x {{cartItem.multiple}}</span></h2>
                   </div>
                   <div data-cartId={{$index}} class="xBtn pointer" ng-click='removeFromCart($index)'><p>x</p></div>
                 </div>
@@ -235,7 +235,7 @@
             </div>
 
             <div class="reviewItems">
-              <div class="itemToReview flexRow" ng-repeat='checkoutItem in checkoutItems'>
+              <div class="itemToReview flexRow" ng-repeat='checkoutItem in cartItems'>
                 <div class="reviewImg flexRow">
                   <img src={{checkoutItem.img}} alt="">
                 </div>
@@ -244,13 +244,14 @@
                 </div>
                 <div class="reviewQuantity flexCol">
                   <div class="quantityNumber flexRow flexRow">
-                    <p>1</p>
+                    <p ng-if="checkoutItem.multiple">{{checkoutItem.multiple}}</p>
+                    <p ng-if="!checkoutItem.multiple">1</p>
                   </div>
                   <div class="quantityChange flexRow">
-                    <div class="increment flexRow">
+                    <div class="increment flexRow pointer" ng-click="incrementCartItem(checkoutItem)">
                       <p>+</p>
                     </div>
-                    <div class="decrement flexRow">
+                    <div class="decrement flexRow pointer" ng-click="decrementCartItem(checkoutItem)">
                       <p>-</p>
                     </div>
                   </div>

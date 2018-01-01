@@ -1,5 +1,6 @@
-const sew_products = [
+let sew_products = [
   {
+    designer: 1,
     name: 'DROP DEAD RED SHOES',
     price: '$38',
     img: './images/shoe1.jpg',
@@ -8,6 +9,7 @@ const sew_products = [
     details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
   },
   {
+    designer: 1,
     name: 'DROP DEAD RED SHOES',
     price: '$36',
     img: './images/shoe1.jpg',
@@ -16,6 +18,7 @@ const sew_products = [
     details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
   },
   {
+    designer: 1,
     name: 'DROP DEAD RED SHOES',
     price: '$39',
     img: './images/shoe1.jpg',
@@ -24,6 +27,7 @@ const sew_products = [
     details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
   },
   {
+    designer: 1,
     name: 'FANCY SHOES',
     price: '$60',
     img: './images/shoe2.png',
@@ -32,6 +36,7 @@ const sew_products = [
     details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
   },
   {
+    designer: 1,
     name: 'FANCY SHOES',
     price: '$60',
     img: './images/shoe2.png',
@@ -40,6 +45,7 @@ const sew_products = [
     details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
   },
   {
+    designer: 1,
     name: 'FANCY SHOES',
     price: '$60',
     img: './images/shoe2.png',

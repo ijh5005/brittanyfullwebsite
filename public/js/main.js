@@ -4,13 +4,11 @@ var app = angular.module('app', []);
 
 app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', 'navigate', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task, navigate){
 
-// optimized processes
-
+  //optimized processes
 
   $scope.themeColor;
   $scope.borderThemeColor;
   $scope.customIcon;
-  $scope.pageProducts;
   $scope.mainPageIndexes = [1, 2, 3, 4, 5, "loading"];
   $scope.productPageIndexes = [1, 2];
   $scope.navOptions = ['HOME', 'BRITTANY', 'BRANDI', 'DESIGNERS', 'CONTACT', 'CHECKOUT'];
@@ -29,7 +27,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $scope.customIcon = task.setCostIcon(pageIndex);
     $scope.themeColor = themeColorObj.themeColor;
     $scope.borderThemeColor = themeColorObj.borderThemeColor;
-    $scope.pageProducts = data.setPageProducts(pageIndex);
+    $rootScope.pageProducts = data.setPageProducts(pageIndex);
     animate.homeSlider(pageIndex);
     $timeout(() => {
       //navigation highlight
@@ -38,7 +36,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }, 1000);
   }
   $scope.navigate = (e) => {
-    debugger
     if($rootScope.loadingPage === true){ return null }
     $rootScope.loadingPage = true;
     $timeout(() => { $rootScope.loadingPage = false; }, 2000)
@@ -54,7 +51,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $scope.borderThemeColor = $rootScope.redBorderThemeColor;
         $scope.customIcon = "./images/sewing.png";
         $timeout(() => {
-          $scope.pageProducts = data.setPageProducts(pageIndex);
+          $rootScope.pageProducts = data.setPageProducts(pageIndex);
         }, 600)
       } else if (pageIndex === 2) {
         animate.slider(pageIndex);
@@ -63,8 +60,14 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $scope.borderThemeColor = $rootScope.blueBorderThemeColor;
         $scope.customIcon = "./images/crochet.png";
         $timeout(() => {
-          $scope.pageProducts = data.setPageProducts(pageIndex);
+          $rootScope.pageProducts = data.setPageProducts(pageIndex);
         }, 600)
+      } else if (pageIndex === 5) {
+        $scope.themeColor =  $rootScope.redThemeColor;
+        $scope.borderThemeColor = $rootScope.redBorderThemeColor;
+        $scope.customIcon = "./images/shoppingBag.png";
+        animate.slider(pageIndex);
+        $('.cartItemsHolder').css('maxHeight', '45em');
       } else {
         animate.slider(pageIndex);
         $('.cartItemsHolder').css('maxHeight', '45em');
@@ -82,6 +85,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     animate.itemToShoppingCart(selector, nodeValue, index);
   }
   $scope.removeFromCart = (index) => {
+    task.removeMultipleFromProductData(index);
     $scope.cartItems.splice(index, 1);
     $scope.checkoutItems.splice(index, 1);
     $rootScope.trackItems--;
@@ -105,9 +109,16 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }
   }
 
+  $scope.incrementCartItem = (item) => {
+    task.increment(item);
+  }
+  $scope.decrementCartItem = (item) => {
+    task.decrement(item);
+  }
 
-
-
+  $rootScope.sew_products;
+  $rootScope.crochet_products;
+  $rootScope.pageProducts;
   $rootScope.blueThemeColor = "rgb(91, 148, 239)";
   $rootScope.blueBorderThemeColor = "rgb(232, 240, 253)";
   $rootScope.redThemeColor = "rgb(237, 125, 125)";
@@ -117,24 +128,16 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.currentPage = 0;
   $rootScope.navOptions = data.navOptions;
   $rootScope.successfullyLoggedIn = false;
+  $rootScope.pauseChartAddition = false;
+  $rootScope.sew_products;
+  $rootScope.crochet_products;
 
-
-
-
-
-
-
-
-
-
-
-
+  //need to be reviewed
 
   $scope.inLargeView = false;
   $scope.cartItems = data.cartItems;
   $scope.checkoutItems = data.checkoutItems;
   $scope.checkoutItemsTotal;
-
 
   $scope.showOptions = (e) => {
     const id = parseInt(e.currentTarget.id);
@@ -190,8 +193,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $('.customizeDirector').css('opacity', 1);
   }
 
-
-
   $scope.signUpLandingPageBtn = () => {
     animate.toSignFormPage('signup');
   }
@@ -199,11 +200,13 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     animate.toSignFormPage('signin');
   }
   $scope.signUpButtonOption = () => {
+    $('.signFormMessage').fadeOut();
     $rootScope.currentPage = "signup";
     $rootScope.signUp = "signOption";
     $rootScope.signIn = "";
   }
   $scope.signInButtonOption = () => {
+    $('.signFormMessage').fadeOut();
     $rootScope.currentPage = "signin";
     $rootScope.signUp = "";
     $rootScope.signIn = "signOption";
@@ -215,6 +218,12 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     const password = $('.signUpPassword').val();
     const url = "/register";
     const signUpObj = { firstname: firstname, lastname: lastname, username: username, password: password }
+    const hasEmptyField = task.hasEmptyFieldCheck(signUpObj);
+    if(hasEmptyField){
+      $(".signFormMessage p").text("Please fill in all fields. Thanks!");
+      $('.signFormMessage').fadeIn();
+      return null;
+    }
     backend.register(signUpObj, url);
   }
   $scope.signInButton = () => {
@@ -231,7 +240,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
       $scope.customIcon = task.setCostIcon(1);
       $scope.themeColor = themeColorObj.themeColor;
       $scope.borderThemeColor = themeColorObj.borderThemeColor;
-      $scope.pageProducts = data.setPageProducts(1);
+      $rootScope.pageProducts = data.setPageProducts(1);
       animate.homeSlider(1);
       $timeout(() => {
         //navigation highlight
@@ -244,7 +253,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     animate.backFromSignFormPage();
   }
 
-
   $rootScope.isIntervalInProgress = false;
 
   $rootScope.viewSlideShow = [];
@@ -256,6 +264,10 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.currentImgEvent;
   $rootScope.currentItem;
   $rootScope.landingPageAnimationInterval;
+
+  //add ids to the cart items => brittanys id start with 1000, brandis 2000, so on
+  $rootScope.sew_products = task.assignIDs(sew_products);
+  $rootScope.crochet_products = task.assignIDs(crochet_products);
 
   task.init($scope.themeColor);
   animate.landingPage();
@@ -301,6 +313,7 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
     const successCallback = (success) => {
       console.log("successfully registered");
 
+      $(".signFormMessage p").text("Thanks For Registering! Try Signing in");
       $('.signFormMessage').fadeIn();
 
       $rootScope.currentPage = "signin";
@@ -310,6 +323,8 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
 
     const errorCallback = () => {
       console.log("error registering");
+      $(".signFormMessage p").text("Username taken. sorry...");
+      $('.signFormMessage').fadeIn();
     }
   }
   this.deleteacc = (id, url) => {
@@ -524,7 +539,7 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
             .css('left', selfPosition.left)
             .css('height', '27.4em')
             .addClass('fullBackground')
-            .css('backgroundImage', 'url(' + data.products[nodeValue].img + ')');
+            .css('backgroundImage', 'url(' + $rootScope.pageProducts[nodeValue].img + ')');
 
       const animation = { left: left, top: top, height: height, width: width }
       const animation2 = { top: inBag, opacity: 0 }
@@ -532,17 +547,30 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
         $clone.css('zIndex', -1);
         $clone.animate(animation2)
 
-        const selectedItem = data.products[index];
+        const selectedItem = $rootScope.pageProducts[index];
 
         //timeout updates the DOM
         $timeout(() => {
-          $rootScope.clickIt = true;
           $rootScope.clickable = null;
           if($rootScope.trackItems > data.cartItems.length){
-            data.cartItems.splice(0, 0, selectedItem);
-            data.checkoutItems.splice(0, 0, selectedItem);
+            //check for a cart dupplicate before adding in order to add a time "x" amount instead of I new item in the cart
+            if(!$rootScope.pauseChartAddition){
+              $rootScope.pauseChartAddition = true;
+              $timeout(() => { $rootScope.pauseChartAddition = false }, 3000);
+              const isADuplicate = task.checkForCartDuplicate(data.cartItems, selectedItem);
+              if(isADuplicate){
+                console.log('is duplicate');
+              }
+              else {
+                data.cartItems.splice(0, 0, selectedItem);
+                data.checkoutItems.splice(0, 0, selectedItem);
+              }
+            }
           }
         }, 10);
+        $timeout(() => {
+          $rootScope.clickIt = true;
+        }, 2000);
       }
       const options = { duration: 1000, complete }
       $clone.animate(animation, options);
@@ -644,7 +672,7 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
 
 app.service('data', function($rootScope, $interval, $timeout){
   this.setPageProducts = (pageIndex) => {
-    let pageProducts = (pageIndex === 1) ? sew_products : crochet_products;
+    let pageProducts = (pageIndex === 1) ? $rootScope.sew_products : $rootScope.crochet_products;
     return pageProducts;
   }
 
@@ -653,7 +681,6 @@ app.service('data', function($rootScope, $interval, $timeout){
   this.navOptions = ['HOME', 'DESIGNERS', 'CONTACT', 'CHECKOUT'],
   this.cartItems = [],
   this.checkoutItems = [],
-  this.products = sew_products;           // this comes from database.js
   this.getCartLength = () => {
     $interval(() => {
       $rootScope.cartQuantity = this.cartItems.length;
@@ -670,12 +697,13 @@ app.service('data', function($rootScope, $interval, $timeout){
     sizes: ['XS', 'S', 'M', 'L']
   }
   this.calculateTotal = () => {
-    if(this.checkoutItems.length > 0){
+    if(this.cartItems.length > 0){
       let total = 0;
-      this.checkoutItems.map((data) => {
+      this.cartItems.map((data) => {
+        let multiple = data["multiple"] ? data["multiple"] : 1;
         const sliceString = data.price.slice(1);
         const toInt = parseInt(sliceString)
-        total += toInt;
+        total += (toInt * multiple);
       })
       return total;
     } else {
@@ -702,7 +730,171 @@ app.service('task', function($rootScope, $interval, $timeout, data){
     else if(pageIndex === 2){ customIcon = "./images/crochet.png"; }
     return customIcon;
   }
+  this.hasEmptyFieldCheck = (obj) => {
+    const values = Object.values(obj);
+    const hasEmptyField = values.includes("") || values.includes(undefined);
+    return hasEmptyField;
+  }
+  this.assignIDs = (arr) => {
+    const designer = arr[0]["designer"];
+    if(designer === 1){
+      arr.map((data, index) => { data["id"] = 1000 + index;})
+    } else if(designer === 2){
+      arr.map((data, index) => { data["id"] = 2000 + index; })
+    }
+    return arr;
+  }
+  this.checkForCartDuplicate = (cartItems, obj) => {
+    //if cart is empty return null
+    if(cartItems.length === 0){ return false }
+    let duplicate = false;
+    const id = obj.id;
+    cartItems.map((data, index) => {
+      if(data.id === id){
+        this.increaseDoubleNum(index);
+        duplicate = true;
+      }
+    });
+    return duplicate;
+  }
+  this.increaseDoubleNum = (index) => {
+    if(data.cartItems[index]["multiple"]){
+      data.cartItems[index]["multiple"]++;
+    } else {
+      data.cartItems[index]["multiple"] = 2;
+    }
+  }
+  this.removeMultipleFromProductData = (index) => {
+    const id = data.cartItems[index]["id"];
+    $rootScope.sew_products.map((data, index) => {
+      const idsMatch = (data.id === id);
+      const hasMultipleField = (data["multiple"] != undefined);
+      if(idsMatch && hasMultipleField){
+        delete $rootScope.sew_products[index]['multiple'];
+      }
+    })
+    $rootScope.crochet_products.map((data, index) => {
+      const idsMatch = (data.id === id);
+      const hasMultipleField = (data["multiple"] != undefined);
+      if(idsMatch && hasMultipleField){
+        delete $rootScope.crochet_products[index]['multiple'];
+      }
+    })
+  }
+  this.decrement = (item) => {
+    const id = item.id;
 
+    //check sew_products
+    $rootScope.sew_products.map((dataValue, index) => {
+      const idsMatch = (dataValue.id === id);
+      const hasMultipleFieldAndGreaterThanOne = (dataValue["multiple"] != undefined) && (dataValue["multiple"] > 1);
+      if(idsMatch){
+        if(hasMultipleFieldAndGreaterThanOne){
+
+          $rootScope.sew_products[index]['multiple']--;
+          if($rootScope.sew_products[index]['multiple'] === 0){
+            data.cartItems.map((dataVal, index, array) => {
+              if(dataVal === $rootScope.sew_products[index]){
+                //go through each of the products to mach the dataval
+                console.log(data.cartItems);
+                data.cartItems.splice(index, 1);
+                console.log(data.cartItems);
+              }
+            })
+          }
+
+        } else if (!hasMultipleFieldAndGreaterThanOne) {
+
+          data.cartItems.map((dataVal, index) => {
+            if(dataVal.id === id){
+              const before = data.cartItems;
+              data.cartItems.splice(index, 1);
+              const after = data.cartItems;
+            }
+          })
+
+        }
+
+      }
+    })
+
+    //check crochet_products
+    $rootScope.crochet_products.map((dataValue, index) => {
+      const idsMatch = (dataValue.id === id);
+      const hasMultipleFieldAndGreaterThanOne = (dataValue["multiple"] != undefined) && (dataValue["multiple"] > 1);
+      if(idsMatch){
+        if(hasMultipleFieldAndGreaterThanOne){
+
+          $rootScope.crochet_products[index]['multiple']--;
+          if($rootScope.crochet_products[index]['multiple'] === 0){
+            data.cartItems.map((dataVal, index, array) => {
+              if(dataVal === $rootScope.crochet_products[index]){
+                //go through each of the products to mach the dataval
+                console.log(data.cartItems);
+                data.cartItems.splice(index, 1);
+                console.log(data.cartItems);
+              }
+            })
+          }
+
+        } else if (!hasMultipleFieldAndGreaterThanOne) {
+
+          data.cartItems.map((dataVal, index) => {
+            if(dataVal.id === id){
+              const before = data.cartItems;
+              data.cartItems.splice(index, 1);
+              const after = data.cartItems;
+            }
+          })
+
+        }
+
+      }
+    })
+
+  }
+  this.increment = (item) => {
+    const id = item.id;
+
+    //check sew_products
+    $rootScope.sew_products.map((dataValue, index) => {
+      const idsMatch = (dataValue.id === id);
+      const hasMultipleField = (dataValue["multiple"] != undefined);
+      if(idsMatch){
+        if(hasMultipleField){
+
+          $rootScope.sew_products[index]["multiple"]++;
+
+
+        } else if (!hasMultipleField) {
+
+          $rootScope.sew_products[index]["multiple"] = 2;
+
+        }
+
+      }
+    })
+
+    //check crochet_products
+    $rootScope.crochet_products.map((dataValue, index) => {
+      const idsMatch = (dataValue.id === id);
+      const hasMultipleField = (dataValue["multiple"] != undefined);
+      if(idsMatch){
+        if(hasMultipleField){
+
+          $rootScope.crochet_products[index]["multiple"]++;
+
+
+        } else if (!hasMultipleField) {
+
+          $rootScope.crochet_products[index]["multiple"] = 2;
+
+        }
+
+      }
+    })
+
+  }
 
   this.init = (themeColor) => {
     $('.shoppingCartBigView').hide();
@@ -721,7 +913,8 @@ app.service('task', function($rootScope, $interval, $timeout, data){
     // $timeout(() => { $('.navOptions[data=1]').css('color', themeColor) });
   }
   this.populateImgsOnPage = () => {
-    const imgLength = data.products.length;
+    if(!$rootScope.pageProducts){ return null }
+    const imgLength = $rootScope.pageProducts.length;
     let index = 0;
     const imgFill = $interval(() => {
       if(index === imgLength){

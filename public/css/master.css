@@ -914,6 +914,7 @@ label {
 
 #total {
   font-size: 2em;
+  letter-spacing: 3px;
 }
 
 .reviewItems {
@@ -923,10 +924,10 @@ label {
 }
 
 .itemToReview {
-  border: 0.1em solid #ed7d7d;
+  border: 0.1em solid #fce9e9;
   height: 12em;
   margin-bottom: 1em;
-  width: 32em;
+  width: 40em;
 }
 
 .reviewImg {
