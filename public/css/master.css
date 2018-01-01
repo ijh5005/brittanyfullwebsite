@@ -201,7 +201,8 @@ input::placeholder {
   width: 50%;
 }
 
-.signFormMessage {
+.signFormMessage,
+.checkoutFormMessage {
   display: none;
 }
 

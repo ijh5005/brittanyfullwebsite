@@ -125,7 +125,7 @@
                   <img src={{cartItem.img}} alt="">
                   <div class="cartItemDescriptionSection">
                     <h2 class="cartItemDescription">{{cartItem.name}}</h2>
-                    <h2 class="cartItemPrice"><span>{{cartItem.price}}</span><span ng-if="cartItem.multiple"> x {{cartItem.multiple}}</span></h2>
+                    <h2 class="cartItemPrice"><span>{{cartItem.price}}</span><span ng-if="cartItem.multiple && (cartItem.multiple > 1)"> x {{cartItem.multiple}}</span></h2>
                   </div>
                   <div data-cartId={{$index}} class="xBtn pointer" ng-click='removeFromCart($index)'><p>x</p></div>
                 </div>
@@ -263,6 +263,9 @@
           </div>
           <div class="personalInformationForm flexCol">
             <div class="formLiner flexCol">
+              <div class="checkoutFormMessage">
+                <p>Thanks For Registering! Try Signing in</p>
+              </div>
               <form class="signUpForm flexCol" action="/register" method="post">
                 <input class="cartForms cartFullname" type="text" name="firstname" value="" placeholder="full name">
                 <input class="cartForms cartAddress" type="text" name="username" value="" placeholder="address">
@@ -271,7 +274,7 @@
                 <input class="cartForms cartZipcode" type="text" name="username" value="" placeholder="zipcode">
                 <input class="cartForms cartEmailAdress" type="text" name="password" value="" placeholder="email adress">
               </form>
-              <div data="signUpSubmit" class="submit flexRow pointer" ng-click='continueInCart()'>
+              <div data="signUpSubmit" class="submit flexRow pointer" ng-click='proceedToCheckout()'>
                 <p>PROCEED TO CHECKOUT</p>
               </div>
             </div>
@@ -322,7 +325,7 @@
               <div id="card-errors" role="alert"></div>
             </div>
 
-            <button class="shoppingCartBtn flexRow"><p>Submit Payment</p></button>
+            <button class="shoppingCartBtn flexRow pointer"><p>Submit Payment</p></button>
           </form>
 
         </div>
@@ -402,7 +405,6 @@
             form.submit();
           }
         })()
-
     </script>
 
     <style type="text/css">

@@ -35,6 +35,8 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     const pageIndex = parseInt(e.currentTarget.attributes.data.nodeValue);
     if(pageIndex != $rootScope.currentPage){
       if(pageIndex === 0){
+        $rootScope.landingPageBtnHoverColor = '#430909';
+        $rootScope.landingPageBtnColor = '#ea6262';
         animate.homeSlider(pageIndex);
       } else if (pageIndex === 1) {
         animate.slider(pageIndex);
@@ -136,6 +138,41 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   }
   $scope.decrementCartItem = (item) => {
     task.decrement(item);
+  }
+
+  $scope.proceedToCheckout = () => {
+    const cartFullname = $(".cartFullname").val();
+    const cartAddress = $(".cartAddress").val();
+    const cartCity = $(".cartCity").val();
+    const cartState = $(".cartState").val();
+    const cartZipcode = $(".cartZipcode").val();
+    const cartEmailAdress = $(".cartEmailAdress").val();
+
+    const checkoutObj = {
+      cartFullname: cartFullname,
+      cartAddress: cartAddress,
+      cartCity: cartCity,
+      cartState: cartState,
+      cartZipcode: cartZipcode,
+      cartEmailAdress: cartEmailAdress,
+    }
+
+    const hasEmptyFields = task.hasEmptyFieldCheck(checkoutObj);
+
+    if (data.cartItems.length === 0) {
+      $(".checkoutFormMessage p").text("There are no items in your cart");
+      $('.checkoutFormMessage').fadeIn();
+      $timeout(() => { $('.checkoutFormMessage').fadeOut(); }, 5000);
+    } else if(hasEmptyFields){
+      $(".checkoutFormMessage p").text("Please fill in all fields. Thanks!");
+      $('.checkoutFormMessage').fadeIn();
+      $timeout(() => { $('.checkoutFormMessage').fadeOut(); }, 5000);
+    } else {
+      animate.creditCardSlider("shoppingCart");
+    }
+  }
+  $scope.backFromShoppingCart = () => {
+    animate.creditCardSlider(5);
   }
 
   $rootScope.signUp = "";
@@ -492,7 +529,17 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
 
     $navSlider.animate(animation1, options);
   }
-
+  this.creditCardSlider = (pageIndex) => {
+    //animate slide transition
+    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
+    $timeout(() => {
+      //after slide has covered the page..
+      $rootScope.currentPage = pageIndex;
+      //finish sliding transition
+      $('.homeNavSlider').css('left', '-100%');
+      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
+    }, 800);
+  }
 
 
 
