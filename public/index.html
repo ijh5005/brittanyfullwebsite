@@ -9,6 +9,7 @@
   </head>
   <body class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
 
+
     <div class="triangle-bottomright-holder flexRow" ng-if="currentPage === 'signup' || currentPage === 'signin' || currentPage === 'shoppingCart'">
       <div class="signFormBackBtn flexRow pointer" ng-click='backFromSignFormPage()' ng-if="currentPage === 'signup' || currentPage === 'signin'">
         <p>&#x276E;</p>
@@ -84,10 +85,10 @@
       </div>
     </div>
 
-    <!-- HOME NAV SLIDER -->
+    <!--      HOME NAV SLIDER       -->
     <div class="homeNavSlider"></div>
 
-    <!-- MAIN PAGE -->
+    <!--      MAIN PAGE       -->
     <div class="container" ng-if="mainPageIndexes.includes(currentPage)">
 
       <!--        NAVIGATOIN       -->
@@ -205,7 +206,7 @@
               <div class="optionsScreen flexRow">
                 <div ng-if='clickIt'>
                   <img class="customizeItems pointer" src={{customIcon}} alt="">
-                  <div view class="pointer"></div>
+                  <div view class="pointer" ng-click="closeView(product)"></div>
                   <div tocart class="pointer"></div>
                 </div>
               </div>
@@ -291,11 +292,11 @@
     <div class="shoppingCartBigView flexRow">
       <div class="shadedArea" ng-click="hideBigView()"></div>
       <div class="bigView flexRow">
-        <div class="leftArrow flexRow pointer" ng-click='galleryLeftClick()'><p>&#x276E;</p></div>
+        <div class="leftArrow flexRow pointer" ng-click='closeViewLeftClick()'><p>&#x276E;</p></div>
         <div class="galleryImgSection flexRow">
-          <img src={{currentSlideImg}} alt="">
+          <img src={{currentCloseView}} alt="">
         </div>
-        <div class="rightArrow flexRow pointer" ng-click='galleryRightClick()'><p>&#x276F;</p></div>
+        <div class="rightArrow flexRow pointer" ng-click='closeViewRightClick()'><p>&#x276F;</p></div>
         <div class="galleryOptions flexCol">
           <div class="xBtnGalleryView flexRow pointer" ng-click="hideBigView()"><p>&#xd7;</p></div>
           <div class="addCartBtnGalleryView flexRow pointer">

@@ -13,14 +13,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $scope.productPageIndexes = [1, 2];
   $scope.navOptions = ['HOME', 'BRITTANY', 'BRANDI', 'DESIGNERS', 'CONTACT', 'CHECKOUT'];
   $scope.filters = data.filters;
-  $rootScope.signUp = "";
-  $rootScope.signIn = "";
-  $rootScope.landingPageBtnHoverColor = '#430909';
-  $rootScope.landingPageBtnColor = '#ea6262';
-  $rootScope.landingPageBtnBorderColor = '#e74b4b';
-  $rootScope.themeColorOne = '#ed7d7d';
-  $rootScope.themeColorTwo = '#5b94ef';
-  $rootScope.loadingPage = false;
 
   $scope.logIn = (pageIndex) => {
     const themeColorObj = task.setThemeColor(pageIndex);
@@ -91,11 +83,26 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $rootScope.trackItems--;
   }
 
-  $scope.galleryLeftClick = () => {
-    navigate.galleryLeftClick();
+  $scope.currentCloseView;
+  $scope.closeViewSlides;
+  $scope.currentIndex;
+  $scope.slidesLength;
+  $scope.closeView = (product) => {
+    $(".shoppingCartBigView").fadeIn();
+    $scope.closeViewSlides = product.imgSlideShow;
+    $scope.currentIndex = 0;
+    $scope.slidesLength = product.imgSlideShow.length;
+    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
   }
-  $scope.galleryRightClick = () => {
-    navigate.galleryRightClick();
+  $scope.closeViewRightClick = () => {
+    const atLastIndex = (++$scope.currentIndex === $scope.slidesLength)
+    $scope.currentIndex = atLastIndex ? 0 : $scope.currentIndex++;
+    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
+  }
+  $scope.closeViewLeftClick = () => {
+    const atFirstIndex = (--$scope.currentIndex < 0);
+    $scope.currentIndex = atFirstIndex ? ($scope.slidesLength - 1) : $scope.currentIndex--;
+    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
   }
 
   $scope.customMouseOver = () => {
@@ -116,6 +123,15 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     task.decrement(item);
   }
 
+  $rootScope.signUp = "";
+  $rootScope.signIn = "";
+  $rootScope.landingPageBtnHoverColor = '#430909';
+  $rootScope.landingPageBtnColor = '#ea6262';
+  $rootScope.landingPageBtnBorderColor = '#e74b4b';
+  $rootScope.themeColorOne = '#ed7d7d';
+  $rootScope.themeColorTwo = '#5b94ef';
+  $rootScope.loadingPage = false;
+
   $rootScope.sew_products;
   $rootScope.crochet_products;
   $rootScope.pageProducts;
@@ -134,7 +150,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
 
   //need to be reviewed
 
-  $scope.inLargeView = false;
   $scope.cartItems = data.cartItems;
   $scope.checkoutItems = data.checkoutItems;
   $scope.checkoutItemsTotal;
@@ -178,14 +193,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     const animation = { top: '100%' };
     const options = { duration: 0, complete };
     $('.options .itemDesciption').animate(animation, options);
-  }
-  $scope.showBigView = (e, index) => {
-    $scope.inLargeView = true;
-    $('.customizeDirector').css('opacity', 0.4);
-    $rootScope.nodeValue = e.currentTarget.attributes[0].nodeValue;
-    $rootScope.currentIndex = index;
-    $rootScope.currentImgEvent = e;
-    navigate.showBigView(true);
   }
   $scope.hideBigView = () => {
     $scope.inLargeView = false;
@@ -261,7 +268,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.cartQuantity = data.getCartLength();
   $rootScope.clickIt = true;
   $rootScope.trackItems = 0;
-  $rootScope.currentImgEvent;
   $rootScope.currentItem;
   $rootScope.landingPageAnimationInterval;
 
@@ -929,28 +935,14 @@ app.service('task', function($rootScope, $interval, $timeout, data){
 });
 
 app.service('navigate', function($rootScope, $timeout, data, animate, task){
-  this.galleryLeftClick = () => {
-    $rootScope.currentSlideImgNumber--;
-    if($rootScope.currentSlideImgNumber < 0){
-      $rootScope.currentSlideImgNumber = $rootScope.viewSlideShow.length - 1;
-    }
-    this.showBigView(false);
+  this.closeView = () => {
+
   }
-  this.galleryRightClick = () => {
-    $rootScope.currentSlideImgNumber++;
-    if($rootScope.currentSlideImgNumber === $rootScope.viewSlideShow.length){
-      $rootScope.currentSlideImgNumber = 0;
-    }
-    this.showBigView(false);
+  this.closeViewLeftClick = () => {
+
   }
-  //controls the view of the gallery picture
-  this.showBigView = (isFromPage) => {
-    if(isFromPage){ $rootScope.currentSlideImgNumber = 0 }
-    $rootScope.currentItem = $rootScope.nodeValue;
-    if($rootScope.brands === 'sew_products'){ $rootScope.viewSlideShow = sew_products[$rootScope.nodeValue].imgSlideShow; }
-    else if($rootScope.brands === 'crochet_products'){ $rootScope.viewSlideShow = crochet_products[$rootScope.nodeValue].imgSlideShow; }
-    $rootScope.currentSlideImg = $rootScope.viewSlideShow[$rootScope.currentSlideImgNumber];
-    $('.shoppingCartBigView').show();
+  this.closeViewRightClick = () => {
+
   }
 });
 
@@ -962,6 +954,6 @@ app.directive("tocart", function($rootScope) {
 
 app.directive("view", function($rootScope) {
   return {
-    template: '<div data={{$index}} disableclick class="viewBtn flexRow pointer" ng-click="showBigView($event, $index)"><p data={{$index}} disableclick class="addToChartText" ng-click="showBigView($event, $index)">VIEW GALLERY</p></div>'
+    template: '<div data={{$index}} disableclick class="viewBtn flexRow pointer"><p data={{$index}} disableclick class="addToChartText">VIEW GALLERY</p></div>'
   }
 });
