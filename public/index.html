@@ -206,7 +206,7 @@
               <div class="optionsScreen flexRow">
                 <div ng-if='clickIt'>
                   <img class="customizeItems pointer" src={{customIcon}} alt="">
-                  <div view class="pointer" ng-click="closeView(product)"></div>
+                  <div data={{$index}} view class="pointer" ng-click="closeView(product, $event, $index)"></div>
                   <div tocart class="pointer"></div>
                 </div>
               </div>
@@ -300,7 +300,7 @@
         <div class="galleryOptions flexCol">
           <div class="xBtnGalleryView flexRow pointer" ng-click="hideBigView()"><p>&#xd7;</p></div>
           <div class="addCartBtnGalleryView flexRow pointer">
-            <img src="./images/shoppingBag.png" alt="" ng-click="moveToCart(currentImgEvent,currentIndex)">
+            <img src="./images/shoppingBag.png" alt="" ng-click="moveToCart(null, null, eventObj)">
           </div>
         </div>
       </div>

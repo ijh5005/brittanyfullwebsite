@@ -67,14 +67,23 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }
   }
 
-  $scope.moveToCart = (e, index) => {
+  $scope.moveToCart = (e, index, eventObj) => {
     $scope.inLargeView = false;
     $('.customizeDirector').css('opacity', 1);
     $rootScope.trackItems++;
     $rootScope.clickIt = false;
-    const nodeValue = e.currentTarget.attributes[0].nodeValue;
+    let nodeValue;
+    let indexValue;
+    if(eventObj){
+      nodeValue = eventObj.nodeValue;
+      indexValue = eventObj.indexValue;
+    } else {
+      nodeValue = e.currentTarget.attributes[0].nodeValue;
+      indexValue = index;
+    }
     const selector = '.itemImage[data=' + nodeValue + ']';
-    animate.itemToShoppingCart(selector, nodeValue, index);
+    debugger
+    animate.itemToShoppingCart(selector, nodeValue, indexValue);
   }
   $scope.removeFromCart = (index) => {
     task.removeMultipleFromProductData(index);
@@ -87,7 +96,13 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $scope.closeViewSlides;
   $scope.currentIndex;
   $scope.slidesLength;
-  $scope.closeView = (product) => {
+  $scope.eventObj = {};
+  $scope.closeView = (product, e, index) => {
+
+    const nodeValue = e.currentTarget.attributes[0].nodeValue;
+    $scope.eventObj["nodeValue"] = nodeValue;
+    $scope.eventObj["indexValue"] = index;
+
     $(".shoppingCartBigView").fadeIn();
     $scope.closeViewSlides = product.imgSlideShow;
     $scope.currentIndex = 0;
