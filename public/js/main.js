@@ -22,6 +22,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.landingPageBtnBorderColor = '#e74b4b';
   $rootScope.themeColorOne = '#ed7d7d';
   $rootScope.themeColorTwo = '#5b94ef';
+  $rootScope.loadingPage = false;
 
   $scope.logIn = (pageIndex) => {
     const themeColorObj = task.setThemeColor(pageIndex);
@@ -37,6 +38,11 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }, 1000);
   }
   $scope.navigate = (e) => {
+    debugger
+    if($rootScope.loadingPage === true){ return null }
+    $rootScope.loadingPage = true;
+    $timeout(() => { $rootScope.loadingPage = false; }, 2000)
+
     const pageIndex = parseInt(e.currentTarget.attributes.data.nodeValue);
     if(pageIndex != $rootScope.currentPage){
       if(pageIndex === 0){
@@ -49,7 +55,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $scope.customIcon = "./images/sewing.png";
         $timeout(() => {
           $scope.pageProducts = data.setPageProducts(pageIndex);
-        }, 900)
+        }, 600)
       } else if (pageIndex === 2) {
         animate.slider(pageIndex);
         //variables that change after the slider covers the screen
@@ -58,7 +64,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $scope.customIcon = "./images/crochet.png";
         $timeout(() => {
           $scope.pageProducts = data.setPageProducts(pageIndex);
-        }, 900)
+        }, 600)
       } else {
         animate.slider(pageIndex);
         $('.cartItemsHolder').css('maxHeight', '45em');
@@ -110,7 +116,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.customCrochetIcon = "./images/crochet.png";
   $rootScope.currentPage = 0;
   $rootScope.navOptions = data.navOptions;
-
+  $rootScope.successfullyLoggedIn = false;
 
 
 
@@ -217,6 +223,22 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     const url = "/login";
     const signInObj = { username: username, password: password }
     backend.loginRequest(signInObj, url);
+    const checkForLogIn = $interval(function () {
+      if($rootScope.successfullyLoggedIn != true){ return null }
+      $interval.cancel(checkForLogIn);
+      $rootScope.successfullyLoggedIn = false;
+      const themeColorObj = task.setThemeColor(1);
+      $scope.customIcon = task.setCostIcon(1);
+      $scope.themeColor = themeColorObj.themeColor;
+      $scope.borderThemeColor = themeColorObj.borderThemeColor;
+      $scope.pageProducts = data.setPageProducts(1);
+      animate.homeSlider(1);
+      $timeout(() => {
+        //navigation highlight
+        $(".navOptions").removeClass("navHighlight");
+        $(".navOptions[data=" + 1 + "]").addClass("navHighlight");
+      }, 1000);
+    }, 10);
   }
   $scope.backFromSignFormPage = () => {
     animate.backFromSignFormPage();
@@ -256,10 +278,9 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
 
     const successCallback = (success) => {
       console.log("successfully logged in");
-
-      debugger
       //set profile information
       this.setUserInfo(success)
+      $rootScope.successfullyLoggedIn = true;
     }
 
     const errorCallback = () => {
@@ -430,8 +451,8 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
       }
     };
 
-    const options = { duration: 800, start, complete }
-    const options2 = { duration: 800, start, complete };
+    const options = { duration: 500, start, complete }
+    const options2 = { duration: 500, start, complete };
 
     $navSlider.animate(animation1, options);
   }
@@ -465,7 +486,7 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
   this.backFromSignFormPage = () => {
     $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
     $timeout(() => {
-      $rootScope.currentPage = "landingPage";
+      $rootScope.currentPage = 0;
       $rootScope.landingPageBtnHoverColor = '#430909';
       $rootScope.landingPageBtnColor = '#ea6262';
       $('.homeNavSlider').css('left', '-100%');
@@ -652,7 +673,6 @@ app.service('data', function($rootScope, $interval, $timeout){
     if(this.checkoutItems.length > 0){
       let total = 0;
       this.checkoutItems.map((data) => {
-        debugger
         const sliceString = data.price.slice(1);
         const toInt = parseInt(sliceString)
         total += toInt;
