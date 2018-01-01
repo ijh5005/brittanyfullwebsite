@@ -191,8 +191,8 @@ input::placeholder {
 .signOption {
   background-color: #ed7d7d;
   border-radius: 0.2em;
-  color: #fff;
   box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  color: #fff;
 }
 
 .signUpBlock,
@@ -572,15 +572,28 @@ input::placeholder {
   width: 74em;
 }
 
+.checkoutSection {
+  justify-content: space-around;
+  padding: 0;
+  width: 100%;
+}
+
+.cartBagContent,
+.personalInformationForm {
+  height: 45em;
+  margin-bottom: 1em;
+  width: 45em;
+}
+
+.cartForms {
+  text-transform: uppercase;
+}
+
 .itemBox {
   height: 32em;
   justify-content: flex-start;
   overflow: hidden;
   width: 20em;
-}
-
-.borderRed {
-  border: 2px solid red;
 }
 
 .options {
@@ -772,7 +785,7 @@ input::placeholder {
 .addCartBtnGalleryView {
   background-color: #fff;
   border-radius: 50%;
-  color: #eee;
+  color: #000;
   height: 4em;
   margin-bottom: 0.6em;
   opacity: 0.4;
@@ -794,4 +807,166 @@ input::placeholder {
 
 .addCartBtnGalleryView img {
   width: 2.4em;
+}
+
+/**
+ * The CSS shown here will not be introduced in the Quickstart guide, but shows
+ * how you can use CSS to style your Element's container.
+ */
+
+.shoppingCart {
+  z-index: 2;
+}
+
+.creditCard {
+  border-radius: 2em;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  box-shadow: 10px 10px 40px 9px rgba(0,0,0,0.1);
+  box-shadow: 0px 70px 68px 0px rgba(0,0,0,0.1);
+  height: 20em;
+  width: 40em;
+}
+
+ .cartForm {
+   width: 30em;
+ }
+
+.StripeElement {
+  -webkit-transition: box-shadow 150ms ease;
+  background-color: white;
+
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px 0 #e6ebf1;
+  box-shadow: none;
+  height: 40px;
+  padding: 10px 12px;
+  transition: box-shadow 150ms ease;
+}
+
+.StripeElement--focus {
+  box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+
+.shoppingCartConatiner {
+  height: 100vh;
+  width: 100vw;
+}
+
+.shoppingCartForm {
+  color: #ec7979;
+  width: 36em;
+}
+
+.shoppingCartBtn {
+  background: #ed7d7d;
+  border: none;
+  border-bottom-left-radius: 1em;
+  border-bottom-right-radius: 1em;
+  color: #fff;
+  font-size: 1em;
+  height: 6.1em;
+  margin: 0;
+  outline: 0;
+  width: 100%;
+}
+
+
+label {
+  left: 1em;
+  position: relative;
+  top: -1em;
+}
+
+.creditCard {
+  align-items: flex-end;
+}
+
+.cardInfo {
+  width: 100%;
+}
+
+.cartForm {
+  height: 10em;
+  width: 100%;
+}
+
+
+/*SHOPPING CART*/
+
+.reviewText {
+  justify-content: space-between;
+  width: 40em;
+}
+
+.reviewText p {
+  font-size: 3em;
+}
+
+#total {
+  font-size: 2em;
+}
+
+.reviewItems {
+  height: 34em;
+  justify-content: flex-end;
+  overflow: scroll;
+}
+
+.itemToReview {
+  border: 0.1em solid #ed7d7d;
+  height: 12em;
+  margin-bottom: 1em;
+  width: 32em;
+}
+
+.reviewImg {
+  height: 12em;
+  width: 12em;
+}
+
+.reviewImg img {
+  height: 96%;
+}
+
+.reviewPrice {
+  height: 10em;
+  width: 10em;
+}
+
+.reviewPrice p {
+  font-size: 3em;
+}
+
+.reviewQuantity {
+  height: 10em;
+  width: 10em;
+}
+
+.quantityChange {
+  justify-content: space-between;
+  width: 7em;
+}
+
+.increment,
+.decrement {
+  height: 3em;
+  width: 3em;
+  border-radius: 50%;
+  background-color: #ed7d7d;
+}
+
+.quantityNumber p,
+.increment p,
+.decrement p {
+  font-size: 2em;
 }
