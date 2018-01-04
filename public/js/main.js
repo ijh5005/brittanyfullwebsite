@@ -4,6 +4,11 @@ var app = angular.module('app', []);
 
 app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', 'navigate', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task, navigate){
 
+  const hiddenNavigationOptions = () => {
+    $(".navOptions[data=3]").hide();
+    $(".navOptions[data=4]").hide();
+  }
+  $interval(() => { hiddenNavigationOptions() })
   //optimized processes
 
   $scope.themeColor;
@@ -69,6 +74,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }
   }
 
+  //cart moving
   $scope.moveToCart = (e, index, eventObj) => {
     $scope.inLargeView = false;
     $('.customizeDirector').css('opacity', 1);
@@ -94,6 +100,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $rootScope.trackItems--;
   }
 
+  //close view options
   $scope.currentCloseView;
   $scope.closeViewSlides;
   $scope.currentIndex;
@@ -122,6 +129,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
   }
 
+  //cutsome button
   $scope.customMouseOver = () => {
     $('.imgHolder p').css('opacity', 1);
     $('.customizeDirector').css('opacity', 1);
@@ -133,6 +141,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }
   }
 
+  //cart quantity
   $scope.incrementCartItem = (item) => {
     task.increment(item);
   }
@@ -140,6 +149,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     task.decrement(item);
   }
 
+  //check out
   $scope.proceedToCheckout = () => {
     const cartFullname = $(".cartFullname").val();
     const cartAddress = $(".cartAddress").val();
@@ -252,6 +262,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $('.customizeDirector').css('opacity', 1);
   }
 
+  //sign in
   $scope.signUpLandingPageBtn = () => {
     animate.toSignFormPage('signup');
   }
@@ -275,22 +286,39 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     const lastname = $('.signUpLastname').val();
     const username = $('.signUpUsername').val();
     const password = $('.signUpPassword').val();
+    const confirmPassword = $('.signUpConfirmPassword').val();
     const url = "/register";
     const signUpObj = { firstname: firstname, lastname: lastname, username: username, password: password }
+
     const hasEmptyField = task.hasEmptyFieldCheck(signUpObj);
-    if(hasEmptyField){
+    const passwordDontMatch = (password != confirmPassword);
+
+    if(passwordDontMatch){
+      $(".signFormMessage p").text("Please confirm your passwords match. Thanks!");
+      $('.signFormMessage').fadeIn();
+    } else if(hasEmptyField){
       $(".signFormMessage p").text("Please fill in all fields. Thanks!");
       $('.signFormMessage').fadeIn();
-      return null;
+    } else {
+      backend.register(signUpObj, url);
     }
-    backend.register(signUpObj, url);
   }
   $scope.signInButton = () => {
     const username = $('.signInUsername').val();
     const password = $('.signInPassword').val();
     const url = "/login";
     const signInObj = { username: username, password: password }
+
+    const hasEmptyField = task.hasEmptyFieldCheck(signInObj);
+
+    if(hasEmptyField){
+      $(".signFormMessage p").text("Please fill in all fields. Thanks!");
+      $('.signFormMessage').fadeIn();
+      return null;
+    }
+
     backend.loginRequest(signInObj, url);
+
     const checkForLogIn = $interval(function () {
       if($rootScope.successfullyLoggedIn != true){ return null }
       $interval.cancel(checkForLogIn);
@@ -355,6 +383,8 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
 
     const errorCallback = () => {
       console.log("error logging in");
+      $(".signFormMessage p").text("Username or Password incorrect");
+      $('.signFormMessage').fadeIn();
     }
   };
   this.register = (signUpObj, url) => {
@@ -540,9 +570,6 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
       $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
     }, 800);
   }
-
-
-
 
 
   this.toSignFormPage = (page) => {
