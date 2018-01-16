@@ -241,7 +241,8 @@ input::placeholder {
   z-index: 2;
 }
 
-.lpBtn:hover {
+.lpBtn:hover,
+.lpBtnHover {
   border: none;
   height: 8em;
   width: 14em;
@@ -306,6 +307,50 @@ input::placeholder {
   opacity: 0.8;
   position: absolute;
   top: -2em;
+}
+
+.movingBox {
+  background-color: transparent;
+  border: 2em solid #444;
+  height: 18em;
+  left: 16em;
+  opacity: 0.4;
+  position: absolute;
+  top: 10em;
+  transform: rotateZ(0deg);
+  transform-origin: top;
+  transition: transform 0.75s;
+  transition: opacity 0.75s;
+  width: 14em;
+}
+
+.movingBoxStart {
+  left: 22em;
+  transform: rotateZ(-40deg);
+}
+
+.movingBoxIn {
+  left: 16em;
+  transform: rotateZ(0deg);
+  transition: transform 1s, left 1s;
+}
+
+.movingBoxOut {
+  left: 10em;
+  transform: rotateZ(40deg);
+  transition: transform 0.5s, left 0.5s;
+  transition-timing-function: ease-in;
+}
+
+.movingBoxText {
+  font-size: 10em;
+  font-weight: 100;
+  left: 2.6em;
+  overflow: hidden;
+  position: absolute;
+  top: 0.6em;
+  transition: height 0.5s;
+  width: 10em;
 }
 
 /*NAVIGATION BAR*/
@@ -961,10 +1006,10 @@ label {
 
 .increment,
 .decrement {
+  background-color: #ed7d7d;
+  border-radius: 50%;
   height: 3em;
   width: 3em;
-  border-radius: 50%;
-  background-color: #ed7d7d;
 }
 
 .quantityNumber p,

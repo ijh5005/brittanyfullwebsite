@@ -59,17 +59,12 @@
     <div class="landingPage flexRow" ng-if="currentPage === 0">
       <div class="homePageContainer flexCol">
         <div class="topHomePage flexRow">
-          <!-- <div class="homePageNav flexRow">
-            <div class="hamburgerMenu pointer"></div>
-            <div class="logInOrSignUp flexRow">
-              <p class="pointer" ng-click='logIn()'>Log In</p>
-              <p class="pointer">Sign Up</p>
-            </div>
-          </div> -->
+          <div class="movingBox"></div>
+          <p class="movingBoxText">Sew & So</p>
           <div class="landingPageButtonSection flexRow">
             <div class="landingPageBtns flexRow">
-              <div class="lpBtn flexRow brittanyPage" ng-click='logIn(1)'><p>BRITTANY PAGE</p></div>
-              <div class="lpBtn flexRow brandiPage" ng-click='logIn(2)'><p>BRANDI PAGE</p></div>
+              <div data="0" class="lpBtn flexRow brittanyPage" ng-click='logIn(1)'><p>SEW & SO</p></div>
+              <div data="1" class="lpBtn flexRow brandiPage" ng-click='logIn(2)'><p>BRANDI PAGE</p></div>
               <div class="lpBtn flexRow signUp" ng-click="signUpLandingPageBtn()"><p>SIGN UP</p></div>
               <div class="lpBtn flexRow loginBtn" ng-click="signInLandingPageBtn()"><p>SIGN IN</p></div>
             </div>

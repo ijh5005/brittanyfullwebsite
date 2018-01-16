@@ -16,7 +16,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $scope.customIcon;
   $scope.mainPageIndexes = [1, 2, 3, 4, 5, "loading"];
   $scope.productPageIndexes = [1, 2];
-  $scope.navOptions = ['HOME', 'BRITTANY', 'BRANDI', 'DESIGNERS', 'CONTACT', 'CHECKOUT'];
+  $scope.navOptions = ['HOME', 'SEW & SO', 'BRANDI', 'DESIGNERS', 'CONTACT', 'CHECKOUT'];
   $scope.filters = data.filters;
 
   $scope.logIn = (pageIndex) => {
@@ -43,6 +43,10 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $rootScope.landingPageBtnHoverColor = '#430909';
         $rootScope.landingPageBtnColor = '#ea6262';
         animate.homeSlider(pageIndex);
+        $('.movingBoxText').text($scope.navOptions[1]);
+        $rootScope.isIntervalInProgress = false;
+        $rootScope.onHomePage = true;
+        $timeout(() => { animate.landingPage(); }, 2000)
       } else if (pageIndex === 1) {
         animate.slider(pageIndex);
         //variables that change after the slider covers the screen
@@ -193,6 +197,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.themeColorOne = '#ed7d7d';
   $rootScope.themeColorTwo = '#5b94ef';
   $rootScope.loadingPage = false;
+  $rootScope.onHomePage = true;
 
   $rootScope.sew_products;
   $rootScope.crochet_products;
@@ -356,7 +361,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.crochet_products = task.assignIDs(crochet_products);
 
   task.init($scope.themeColor);
-  animate.landingPage();
+  $timeout(() => { animate.landingPage(); })
   animate.customButton();
   $interval(() => { $scope.checkoutItemsTotal = data.calculateTotal() });
 
@@ -697,13 +702,29 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
     // }, 1000)
   }
   this.landingPage = () => {
+    //set a watch for homepage
+    $('.lpBtn').click(() => { $rootScope.onHomePage = false })
+
+    const $movingBox = $('.movingBox');
+    const $movingBoxP = $('.movingBoxText');
+    $movingBoxP.css('height', '1.4em');
     const animationDuration = 500;
     const intervalDuration = 4500;
+    const moveBoxText = ['Sew & So', 'Brandi Logo', 'Sign Up'];
+    let moveBoxTextIndex = 0;
+    // $('.lpBtn[data=0]').addClass('lpBtnHover');
+
     $rootScope.landingPageAnimationInterval = $interval(() => {
 
       //check to see if the interval has finished completing before starting another one
       if($rootScope.isIntervalInProgress){ return false }
       $rootScope.isIntervalInProgress = true;
+
+      //stop animation if not on home page
+      if(!$rootScope.onHomePage){
+        $interval.cancel($rootScope.landingPageAnimationInterval);
+        return null
+      }
 
       const initialFirstPageColor = 'rgb(237, 125, 125)';
       const initialSecondPageColor = 'rgb(91, 148, 239)';
@@ -716,6 +737,26 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
 
       //animation start function
       const start = () => {
+        moveBoxTextIndex++;
+        moveBoxTextIndex = (moveBoxTextIndex === moveBoxText.length) ? 0 : moveBoxTextIndex;
+        $movingBox.fadeOut(300);
+        // $('.lpBtn').removeClass('lpBtnHover');
+        // $('.lpBtn[data=' + moveBoxTextIndex + ']').addClass('lpBtnHover');
+        $movingBoxP.css('height', '0em');
+        $movingBox.removeClass('movingBoxIn').addClass('movingBoxOut');
+        $timeout(() => {
+
+          $movingBox.removeClass('movingBoxOut').addClass('movingBoxStart');
+          $movingBoxP.text(moveBoxText[moveBoxTextIndex]);
+          $timeout(() => {
+            $movingBox.fadeIn(750);
+            $movingBox.addClass('movingBoxIn');
+            $timeout(() => {
+              $movingBoxP.css('height', '1.4em');
+            }, 200)
+          }, 100)
+        }, 400);
+
         if(currentColor === 'firstColor'){
           $rootScope.landingPageBtnHoverColor = '#0b3474';
           $rootScope.landingPageBtnColor = '#4585ed';
