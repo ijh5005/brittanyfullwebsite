@@ -41,7 +41,7 @@
           <input class="signUpPassword" type="password" name="password" value="" placeholder="password">
           <input class="signUpConfirmPassword" type="password" name="confirmpassword" value="" placeholder="confirm password">
           <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signUpButton()'>
-            <p>submit</p>
+            <p>{{submit}}</p>
           </div>
         </form>
         <form class="signInForm flexCol" action="/login" method="post" ng-if="currentPage === 'signin'">
@@ -49,7 +49,7 @@
           <input class="signInUsername" type="text" name="username" value="" placeholder="username">
           <input class="signInPassword" type="password" name="password" value="" placeholder="password">
           <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signInButton()'>
-            <p>submit</p>
+            <p>{{submit}}</p>
           </div>
         </form>
       </div>
@@ -228,7 +228,7 @@
 
             <div class="reviewText flexRow">
               <p>REVIEW ITEMS IN CART</p>
-              <p id="total">Total ${{checkoutItemsTotal}}</p>
+              <p id="total">${{checkoutItemsTotal}}</p>
             </div>
 
             <div class="reviewItems">
@@ -279,7 +279,7 @@
 
         <!--       LOADING SCREEN     -->
         <div class="itemSection flexRow"  ng-if="currentPage === 'loading'">
-          <!-- <h1>loading...</h1> -->
+          <h1>loading...</h1>
         </div>
 
       </div>
@@ -291,11 +291,24 @@
     <div class="shoppingCartBigView flexRow">
       <div class="shadedArea" ng-click="hideBigView()"></div>
       <div class="bigView flexRow">
-        <div class="leftArrow flexRow pointer" ng-click='closeViewLeftClick()'><p>&#x276E;</p></div>
-        <div class="galleryImgSection flexRow">
-          <img src={{currentCloseView}} alt="">
+        <div class="galleryImgSection flexCol">
+          <div class="itemGallery flexRow">
+            <div class="bigViewItemSection">
+              <img src={{currentCloseView}} alt="">
+            </div>
+            <div class="smallViewItemSection flexCol">
+              <div class="smallViemItem pointer" ng-click='changeCloseViewItem("smallViewImgOne")'>
+                <img src={{smallViewImgOne}} alt="">
+              </div>
+              <div class="smallViemItem pointer" ng-click='changeCloseViewItem("smallViewImgTwo")'>
+                <img src={{smallViewImgTwo}} alt="">
+              </div>
+              <div class="smallViemItem pointer" ng-click='changeCloseViewItem("smallViewImgThree")'>
+                <img src={{smallViewImgThree}} alt="">
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="rightArrow flexRow pointer" ng-click='closeViewRightClick()'><p>&#x276F;</p></div>
         <div class="galleryOptions flexCol">
           <div class="xBtnGalleryView flexRow pointer" ng-click="hideBigView()"><p>&#xd7;</p></div>
           <div class="addCartBtnGalleryView flexRow pointer">

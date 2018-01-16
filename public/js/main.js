@@ -2,7 +2,7 @@
 
 var app = angular.module('app', []);
 
-app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', 'navigate', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task, navigate){
+app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task){
 
   const hiddenNavigationOptions = () => {
     $(".navOptions[data=3]").hide();
@@ -33,12 +33,13 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }, 1000);
   }
   $scope.navigate = (e) => {
-    if($rootScope.loadingPage === true){ return null }
-    $rootScope.loadingPage = true;
-    $timeout(() => { $rootScope.loadingPage = false; }, 2000)
-
     const pageIndex = parseInt(e.currentTarget.attributes.data.nodeValue);
     if(pageIndex != $rootScope.currentPage){
+
+      if($rootScope.loadingPage === true){ return null }
+      $rootScope.loadingPage = true;
+      $timeout(() => { $rootScope.loadingPage = false; }, 1600)
+
       if(pageIndex === 0){
         $rootScope.landingPageBtnHoverColor = '#430909';
         $rootScope.landingPageBtnColor = '#ea6262';
@@ -55,7 +56,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $scope.customIcon = "./images/sewing.png";
         $timeout(() => {
           $rootScope.pageProducts = data.setPageProducts(pageIndex);
-        }, 600)
+        })
       } else if (pageIndex === 2) {
         animate.slider(pageIndex);
         //variables that change after the slider covers the screen
@@ -64,7 +65,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $scope.customIcon = "./images/crochet.png";
         $timeout(() => {
           $rootScope.pageProducts = data.setPageProducts(pageIndex);
-        }, 600)
+        })
       } else if (pageIndex === 5) {
         $scope.themeColor =  $rootScope.redThemeColor;
         $scope.borderThemeColor = $rootScope.redBorderThemeColor;
@@ -80,7 +81,9 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
 
   //cart moving
   $scope.moveToCart = (e, index, eventObj) => {
-    $scope.inLargeView = false;
+    $rootScope.loadingPage = true;
+    $timeout(() => { $rootScope.loadingPage = false; }, 1800)
+
     $('.customizeDirector').css('opacity', 1);
     $rootScope.trackItems++;
     $rootScope.clickIt = false;
@@ -105,32 +108,24 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   }
 
   //close view options
-  $scope.currentCloseView;
-  $scope.closeViewSlides;
-  $scope.currentIndex;
-  $scope.slidesLength;
   $scope.eventObj = {};
-  $scope.closeView = (product, e, index) => {
+  $scope.currentCloseView = '';
+  $scope.smallViewImgOne = '';
+  $scope.smallViewImgTwo = '';
+  $scope.smallViewImgThree = '';
+  $scope.changeCloseViewItem = (item) => {
+    $scope.currentCloseView = $scope[item];
+  }
 
+  $scope.closeView = (product, e, index) => {
+    $scope.currentCloseView = product.img;
+    $scope.smallViewImgOne = product.imgSlideShow[0];
+    $scope.smallViewImgTwo = product.imgSlideShow[1];
+    $scope.smallViewImgThree = product.imgSlideShow[2];
     const nodeValue = e.currentTarget.attributes[0].nodeValue;
     $scope.eventObj["nodeValue"] = nodeValue;
     $scope.eventObj["indexValue"] = index;
-
     $(".shoppingCartBigView").fadeIn();
-    $scope.closeViewSlides = product.imgSlideShow;
-    $scope.currentIndex = 0;
-    $scope.slidesLength = product.imgSlideShow.length;
-    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
-  }
-  $scope.closeViewRightClick = () => {
-    const atLastIndex = (++$scope.currentIndex === $scope.slidesLength)
-    $scope.currentIndex = atLastIndex ? 0 : $scope.currentIndex++;
-    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
-  }
-  $scope.closeViewLeftClick = () => {
-    const atFirstIndex = (--$scope.currentIndex < 0);
-    $scope.currentIndex = atFirstIndex ? ($scope.slidesLength - 1) : $scope.currentIndex--;
-    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
   }
 
   //cutsome button
@@ -140,9 +135,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   }
   $scope.customMouseLeave = () => {
     $('.imgHolder p').css('opacity', 0);
-    if($scope.inLargeView){
-        $('.customizeDirector').css('opacity', 0.4);
-    }
   }
 
   //cart quantity
@@ -262,26 +254,31 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $('.options .itemDesciption').animate(animation, options);
   }
   $scope.hideBigView = () => {
-    $scope.inLargeView = false;
     $('.shoppingCartBigView').hide();
     $('.customizeDirector').css('opacity', 1);
   }
 
   //sign in
+  $scope.submit = '';
   $scope.signUpLandingPageBtn = () => {
     animate.toSignFormPage('signup');
+    $scope.submit = 'sign up';
   }
   $scope.signInLandingPageBtn = () => {
+    debugger
     animate.toSignFormPage('signin');
+    $scope.submit = 'sign in';
   }
   $scope.signUpButtonOption = () => {
     $('.signFormMessage').fadeOut();
+    $scope.submit = 'sign up';
     $rootScope.currentPage = "signup";
     $rootScope.signUp = "signOption";
     $rootScope.signIn = "";
   }
   $scope.signInButtonOption = () => {
     $('.signFormMessage').fadeOut();
+    $scope.submit = 'sign in';
     $rootScope.currentPage = "signin";
     $rootScope.signUp = "";
     $rootScope.signIn = "signOption";
@@ -532,37 +529,47 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
     }, 800);
   }
   this.slider = (pageIndex) => {
-    let animationNumber = 1;
-    const $navSlider = $(".navSlider");
-    const animation1 = { left: '0%' };
-    const animation2 = { left: '-100%' };
+    $(".navOptions").removeClass("navHighlight");
+    // $rootScope.currentPage = "loading";
+    $rootScope.pageProducts = "";
+    $rootScope.currentPage = pageIndex;
+    $(".navOptions[data=" + pageIndex + "]").addClass("navHighlight");
+    this.customButton();
+    $timeout(() => {
+      task.populateImgsOnPage();
+    }, 10)
 
-    const start = () => {
-      if(animationNumber === 1){
-        $rootScope.currentPage = "loading";
-        //reset navigation highlight
-        $(".navOptions").removeClass("navHighlight");
-      } else if (animationNumber === 2) {
-        $rootScope.currentPage = pageIndex;
-        //navigation highlight
-        $(".navOptions[data=" + pageIndex + "]").addClass("navHighlight");
-        this.customButton();
-      }
-    };
-    const complete = () => {
-      if(animationNumber === 1){
-        $navSlider.animate(animation2, options2);
-        animationNumber = 2;
-      } else if (animationNumber === 2) {
-        task.populateImgsOnPage();
-        $navSlider.css('left', '100%');
-      }
-    };
-
-    const options = { duration: 500, start, complete }
-    const options2 = { duration: 500, start, complete };
-
-    $navSlider.animate(animation1, options);
+    // let animationNumber = 1;
+    // const $navSlider = $(".navSlider");
+    // const animation1 = { left: '0%' };
+    // const animation2 = { left: '-100%' };
+    //
+    // const start = () => {
+    //   if(animationNumber === 1){
+    //     $rootScope.currentPage = "loading";
+    //     //reset navigation highlight
+    //     $(".navOptions").removeClass("navHighlight");
+    //   } else if (animationNumber === 2) {
+    //     $rootScope.currentPage = pageIndex;
+    //     //navigation highlight
+    //     $(".navOptions[data=" + pageIndex + "]").addClass("navHighlight");
+    //     this.customButton();
+    //   }
+    // };
+    // const complete = () => {
+    //   if(animationNumber === 1){
+    //     $navSlider.animate(animation2, options2);
+    //     animationNumber = 2;
+    //   } else if (animationNumber === 2) {
+    //     task.populateImgsOnPage();
+    //     $navSlider.css('left', '100%');
+    //   }
+    // };
+    //
+    // const options = { duration: 500, start, complete }
+    // const options2 = { duration: 500, start, complete };
+    //
+    // $navSlider.animate(animation1, options);
   }
   this.creditCardSlider = (pageIndex) => {
     //animate slide transition
@@ -625,7 +632,7 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
 
       //if the shopping cart drop needs adjustments chang the dx and dy
       const dx = 94;
-      const dy = 120;
+      const dy = 130;
 
       const left = cartPostion.left + dx;
       const top = cartPostion.top + dy;
@@ -658,16 +665,13 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
               $rootScope.pauseChartAddition = true;
               $timeout(() => { $rootScope.pauseChartAddition = false }, 3000);
               const isADuplicate = task.checkForCartDuplicate(data.cartItems, selectedItem);
-              if(isADuplicate){
-                console.log('is duplicate');
-              }
-              else {
+              if(!isADuplicate){
                 data.cartItems.splice(0, 0, selectedItem);
                 data.checkoutItems.splice(0, 0, selectedItem);
               }
             }
           }
-        }, 10);
+        });
         $timeout(() => {
           $rootScope.clickIt = true;
         }, 2000);
@@ -1062,18 +1066,6 @@ app.service('task', function($rootScope, $interval, $timeout, data){
     }, 200);
   }
 
-});
-
-app.service('navigate', function($rootScope, $timeout, data, animate, task){
-  this.closeView = () => {
-
-  }
-  this.closeViewLeftClick = () => {
-
-  }
-  this.closeViewRightClick = () => {
-
-  }
 });
 
 app.directive("tocart", function($rootScope) {
