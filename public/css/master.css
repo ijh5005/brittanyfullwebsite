@@ -42,6 +42,7 @@ body {
 .container {
   height: 85vh;
   width: 91vw;
+  width: 100em;
 }
 
 .pointer {
@@ -59,28 +60,28 @@ body {
   width: 100%;
 }
 
-.navSlider,
-.homeNavSlider {
-  height: 100%;
-  left: 100%;
-  position: absolute;
-  top: 0;
-  width: 100%;
-  z-index: 10;
-}
-
 .transitionLeft {
   transition: left 0.5s;
 }
 
 /*SIGN UP AND SIGN IN PAGE*/
 
+.signUpPage {
+  background-color: #fff;
+  height: 100vh;
+  left: 100%;
+  min-width: 30em;
+  position: absolute;
+  transition: left 0.5s;
+  width: 40%;
+  z-index: 5;
+}
+
 .signFormPage {
   border-radius: 1em;
   height: 50em;
   justify-content: space-between;
   position: relative;
-  width: 34em;
 }
 
 .signSelect {
@@ -132,7 +133,7 @@ input::placeholder {
 .submit {
   background-color: #ed7d7d;
   border-radius: 0.2em;
-  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  /*box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);*/
   color: #fff;
   height: 3.8em;
   width: 27em;
@@ -146,50 +147,16 @@ input::placeholder {
   background-color: #56d39d;
 }
 
-.triangle-bottomright-holder {
-  align-items: flex-end;
-  height: 100%;
-  justify-content: flex-end;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-
-.triangle-bottomright {
-  border-bottom: 23em solid #ed7d7d;
-  border-left: 55em solid transparent;
-  height: 0;
-  margin: 0 1em 1em 0;
-  width: 0px;
-}
-
-.signFormBackBtn p {
-  font-size: 2em;
-}
-
-.signFormBackBtn {
-  border: 0.01em solid #ed7d7d;
-  border-radius: 50%;
-  color: #ed7d7d;
-  height: 4em;
-  left: 3em;
-  position: absolute;
-  top: 3em;
-  width: 4em;
-}
-
 .signUpBlock p,
 .signInBlock p {
-  color: #222;
   font-size: 2em;
-  font-weight: 600;
+  font-weight: 100;
 }
 
 .signOption {
   background-color: #ed7d7d;
   border-radius: 0.2em;
-  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  /*box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);*/
   color: #fff;
 }
 
@@ -354,6 +321,7 @@ input::placeholder {
 /*NAVIGATION BAR*/
 
 .navigationBar {
+  align-items: flex-end;
   border-bottom: 0.1em solid #f1f1f1;
   height: 8vh;
   justify-content: space-between;
@@ -363,7 +331,10 @@ input::placeholder {
 .navigationBar p {
   font-size: 1.3em;
   font-weight: 600;
-  margin: 0 1.25em 1.6em 1.25em;
+  margin: 0 1em 0 1em;
+  margin-bottom: 0.5em;
+  transition: margin-bottom 0.5s;
+  letter-spacing: 2.4px;
 }
 
 .navigationBar p:first-child {
@@ -594,6 +565,11 @@ input::placeholder {
 	width: 4px;
 }
 
+.itemTopBar {
+  width: 100%;
+  height: 6em;
+}
+
 .sideBar::-webkit-scrollbar {
 	width: 0px;
 }
@@ -610,10 +586,10 @@ input::placeholder {
   flex-wrap: wrap;
   height: 100%;
   justify-content: space-around;
-  margin-top: 2em;
   overflow: scroll;
-  padding-left: 2em;
+  padding-left: 1em;
   width: 74em;
+  width: 88em;
 }
 
 .checkoutSection {
@@ -623,10 +599,15 @@ input::placeholder {
 }
 
 .cartBagContent,
-.personalInformationForm {
+.personalInformationForm,
+.cardCheckOut {
   height: 45em;
-  margin-bottom: 1em;
-  width: 45em;
+  width: 33%;
+}
+
+.personalInformationForm {
+  border-left: 0.1em solid #fce9e9;
+  border-right: 0.1em solid #fce9e9;
 }
 
 .cartForms {
@@ -637,7 +618,7 @@ input::placeholder {
   height: 32em;
   justify-content: flex-start;
   overflow: hidden;
-  width: 20em;
+  margin-right: 2em;
 }
 
 .options {
@@ -750,6 +731,7 @@ input::placeholder {
 .viewBtn:hover {
   background-color: #fff;
   font-weight: bold;
+  transition: background-color 0.25s;
 }
 
 .details {
@@ -781,14 +763,13 @@ input::placeholder {
 }
 
 .bigView {
-  height: 98%;
   z-index: 2;
 }
 
 .galleryImgSection {
   background-color: #fff;
   height: 90%;
-  width: 60em;
+  width: 48em;
 }
 
 .galleryImgSection img {
@@ -807,7 +788,7 @@ input::placeholder {
 .itemGallery {
   height: 90%;
   justify-content: space-around;
-  width: 90%;
+  width: 100%;
 }
 
 .bigViewItemSection {
@@ -831,7 +812,7 @@ input::placeholder {
 }
 
 .smallViemItem img {
-  height: 100%;
+  height: 99%;
   width: 10em;
 }
 
@@ -873,9 +854,9 @@ input::placeholder {
 
 .creditCard {
   border-radius: 2em;
-  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
+  /*box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.1);
   box-shadow: 10px 10px 40px 9px rgba(0,0,0,0.1);
-  box-shadow: 0px 70px 68px 0px rgba(0,0,0,0.1);
+  box-shadow: 0px 70px 68px 0px rgba(0,0,0,0.1);*/
   height: 20em;
   width: 40em;
 }
@@ -885,17 +866,15 @@ input::placeholder {
  }
 
 .StripeElement {
-  -webkit-transition: box-shadow 150ms ease;
   background-color: white;
-
   background-color: transparent;
-  border: 1px solid transparent;
+  border: 0.01em solid #ed7d7d;
+  border-bottom: none;
   border-radius: 4px;
   box-shadow: 0 1px 3px 0 #e6ebf1;
   box-shadow: none;
   height: 40px;
   padding: 10px 12px;
-  transition: box-shadow 150ms ease;
 }
 
 .StripeElement--focus {
@@ -921,16 +900,20 @@ input::placeholder {
 }
 
 .shoppingCartBtn {
-  background: #ed7d7d;
+  background-color: #ed7d7d;
   border: none;
-  border-bottom-left-radius: 1em;
-  border-bottom-right-radius: 1em;
+  border-radius: 0.2em;
   color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 1em;
-  height: 6.1em;
-  margin: 0;
+  height: 3.8em;
   outline: 0;
-  width: 100%;
+  width: 27em
+}
+
+.shoppingCartBtn p {
+  font-size: 1.8em;
+  margin: 0;
 }
 
 
@@ -957,8 +940,8 @@ label {
 /*SHOPPING CART*/
 
 .reviewText {
-  justify-content: space-between;
-  width: 40em;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .reviewText p {
@@ -971,7 +954,7 @@ label {
 }
 
 .reviewItems {
-  height: 34em;
+  height: 36em;
   justify-content: flex-end;
   overflow: scroll;
 }
@@ -979,7 +962,7 @@ label {
 .itemToReview {
   height: 12em;
   margin-bottom: 1em;
-  width: 40em;
+  width: 100%;
 }
 
 .reviewImg {
@@ -1022,4 +1005,89 @@ label {
 .increment p,
 .decrement p {
   font-size: 2em;
+}
+
+
+/*CHECKOUT PAGE*/
+
+.shoppingCartContainer {
+  height: 100vh;
+  width: 68em;
+}
+
+.shoppingCartLeftSide,
+.shoppingCartRightSide {
+  height: 100vh;
+  width: 50%;
+}
+
+.creditCardComponents {
+  height: 50%;
+  width: 100%;
+}
+
+#creditCard {
+  background-color: #222;
+  border-radius: 1em;
+  color: #fff;
+  flex-direction: column;
+  font-family: sans-serif;
+  height: 17.2em;
+  position: relative;
+  width: 27.4em;
+}
+
+#creditCardTop,
+#creditCardBottom {
+  position: absolute;
+}
+
+#creditCardTop {
+  top: 0;
+}
+
+#creditCardBottom {
+  top: 50%;
+}
+
+#creditCardTop p {
+  font-size: 2.6em;
+  margin: 1em;
+}
+
+#creditCardBottom {
+  align-items: space-between;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#cardNumbers {
+  align-items: flex-start;
+  justify-content: space-around;
+  width: 80%;
+}
+
+#creditCardBottom span {
+  font-size: 2em;
+}
+
+#creditCardBottomInfo {
+  align-items: flex-end;
+  height: 80%;
+  justify-content: space-between;
+  width: 60%;
+}
+
+#creditCardBottomInfo .creditCardName {
+  font-size: 1.2em;
+}
+
+#shadow {
+  background-color: #222;
+  border-radius: 1em;
+  filter: blur(8px);
+  flex-direction: column;
+  height: 1em;
+  margin-top: 8em;
+  width: 20em;
 }

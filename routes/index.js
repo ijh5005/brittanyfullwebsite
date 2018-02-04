@@ -2,7 +2,10 @@ var express = require('express');
 var router = express.Router();
 var twilio = require('twilio');
 var nodemailer = require('nodemailer');
-var stripe = require('stripe')('sk_test_irjNR7blZh4Wr69f9UXdAJ4s');
+// Set your secret key: remember to change this to your live secret key in production
+// See your keys here: https://dashboard.stripe.com/account/apikeys
+var stripe = require("stripe")("sk_test_irjNR7blZh4Wr69f9UXdAJ4s");
+
 const mLabUser = 'user';
 const mLPw = '1234';
 
@@ -160,21 +163,26 @@ router.post('/text', (req, res, next) => {
 
 });
 
-//charger route
+// charge customers
 router.post('/charge', (req, res, next) => {
+  // Token is created using Checkout or Elements!
+  // Get the payment token ID submitted by the form:
+  var token = req.body.stripeToken; // Using Express
+
   //amount is in cents
   const amount = 2500;
-
   stripe.customers.create({
-    email: 'req.body.stripeEmail@email.com',
-    source: req.body.stripeToken,
-  }).then((customer) => {
+    email: 'ijh5005@email.com',
+  }).then(() => {
     stripe.charges.create({
       amount: amount,
       description: "product",
       currency: 'usd',
-      customer: customer.id
-    }).then((charge) => {
+      source: token
+    }, function (err, charge) {
+      if(err){
+        console.log(err);
+      }
       res.status(200).send('payment complete');
     })
   })

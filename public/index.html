@@ -7,56 +7,48 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link rel="stylesheet" href="./css/master.css">
   </head>
+
   <body class="flexCol" ng-app='app' ng-controller='ctrl' ng-cloak>
 
-
-    <div class="triangle-bottomright-holder flexRow" ng-if="currentPage === 'signup' || currentPage === 'signin' || currentPage === 'shoppingCart'">
-      <div class="signFormBackBtn flexRow pointer" ng-click='backFromSignFormPage()' ng-if="currentPage === 'signup' || currentPage === 'signin'">
-        <p>&#x276E;</p>
-      </div>
-      <div class="signFormBackBtn flexRow pointer" ng-click='backFromShoppingCart()' ng-if="currentPage === 'shoppingCart'">
-        <p>&#x276E;</p>
-      </div>
-      <div class="triangle-bottomright"></div>
-    </div>
-
     <!--       SIGN IN AND SIGN UP PAGE     -->
-    <div class="signFormPage flexCol" ng-if="currentPage === 'signup' || currentPage === 'signin'">
-      <div class="signSelect flexRow">
-        <div class="signUpBlock flexRow pointer" ng-class='signUp' ng-click='signUpButtonOption()'>
-          <p>SIGN UP</p>
-        </div>
-        <div class="signInBlock flexRow pointer" ng-class='signIn' ng-click='signInButtonOption()'>
-          <p>SIGN IN</p>
-        </div>
-      </div>
-      <div class="signFormMessage">
-        <p>Thanks For Registering! Try Signing in</p>
-      </div>
-      <div class="formLiner flexCol">
-        <form class="signUpForm flexCol" action="/register" method="post" ng-if="currentPage === 'signup'">
-          <input class="signUpFirstname" type="text" name="firstname" value="" placeholder="firstname">
-          <input class="signUpLastname" type="text" name="lastname" value="" placeholder="lastname">
-          <input class="signUpUsername" type="text" name="username" value="" placeholder="username">
-          <input class="signUpPassword" type="password" name="password" value="" placeholder="password">
-          <input class="signUpConfirmPassword" type="password" name="confirmpassword" value="" placeholder="confirm password">
-          <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signUpButton()'>
-            <p>{{submit}}</p>
+    <div class="signUpPage flexRow">
+      <div class="signFormPage flexCol">
+        <div class="signSelect flexRow">
+          <div class="signUpBlock flexRow pointer" ng-class='signUp' ng-click='signUpButton()'>
+            <p>SIGN UP</p>
           </div>
-        </form>
-        <form class="signInForm flexCol" action="/login" method="post" ng-if="currentPage === 'signin'">
-          <div class="divLiner"></div>
-          <input class="signInUsername" type="text" name="username" value="" placeholder="username">
-          <input class="signInPassword" type="password" name="password" value="" placeholder="password">
-          <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signInButton()'>
-            <p>{{submit}}</p>
+          <div class="signInBlock flexRow pointer" ng-class='signIn' ng-click='signInButton()'>
+            <p>SIGN IN</p>
           </div>
-        </form>
+        </div>
+        <div class="signFormMessage">
+          <p>Thanks For Registering! Try Signing in</p>
+        </div>
+        <div class="formLiner flexCol">
+          <form class="signUpForm flexCol" action="/register" method="post" ng-if="currentSignPage === 'signup'">
+            <input class="signUpFirstname" type="text" name="firstname" value="" placeholder="firstname">
+            <input class="signUpLastname" type="text" name="lastname" value="" placeholder="lastname">
+            <input class="signUpUsername" type="text" name="username" value="" placeholder="username">
+            <input class="signUpPassword" type="password" name="password" value="" placeholder="password">
+            <input class="signUpConfirmPassword" type="password" name="confirmpassword" value="" placeholder="confirm password">
+            <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signUpSubmit()'>
+              <p>{{submitBtnText}}</p>
+            </div>
+          </form>
+          <form class="signInForm flexCol" action="/login" method="post" ng-if="currentSignPage === 'signin'">
+            <div class="divLiner"></div>
+            <input class="signInUsername" type="text" name="username" value="" placeholder="username">
+            <input class="signInPassword" type="password" name="password" value="" placeholder="password">
+            <div data="signUpSubmit" class="submit flexRow pointer" ng-click='signInSubmit()'>
+              <p>{{submitBtnText}}</p>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
 
     <!--        LANDING PAGE         -->
-    <div class="landingPage flexRow" ng-if="currentPage === 0">
+    <div class="landingPage flexRow" ng-if="currentPage === 0" ng-click='hideSignInPage()'>
       <div class="homePageContainer flexCol">
         <div class="topHomePage flexRow">
           <div class="movingBox"></div>
@@ -65,8 +57,8 @@
             <div class="landingPageBtns flexRow">
               <div data="0" class="lpBtn flexRow brittanyPage" ng-click='logIn(1)'><p>SEW & SO</p></div>
               <div data="1" class="lpBtn flexRow brandiPage" ng-click='logIn(2)'><p>BRANDI PAGE</p></div>
-              <div class="lpBtn flexRow signUp" ng-click="signUpLandingPageBtn()"><p>SIGN UP</p></div>
-              <div class="lpBtn flexRow loginBtn" ng-click="signInLandingPageBtn()"><p>SIGN IN</p></div>
+              <div class="lpBtn flexRow signUp" ng-click="signUpButton('onLandingPage')"><p>SIGN UP</p></div>
+              <div class="lpBtn flexRow loginBtn" ng-click="signInButton('onLandingPage')"><p>SIGN IN</p></div>
             </div>
           </div>
           <div class="landingPageColorOne"></div>
@@ -81,9 +73,6 @@
       </div>
     </div>
 
-    <!--      HOME NAV SLIDER       -->
-    <div class="homeNavSlider"></div>
-
     <!--      MAIN PAGE       -->
     <div class="container" ng-if="mainPageIndexes.includes(currentPage)">
 
@@ -93,7 +82,7 @@
           <p data={{$index}} ng-repeat="nav in navOptions track by $index" class="navOptions pointer" ng-click='navigate($event)'>{{nav}}</p>
         </div>
         <div class="imgHolder flexRow">
-          <img class="customize customizeDirector pointer" src="{{customIcon}}" alt="" ng-mouseover="customMouseOver()" ng-mouseleave="customMouseLeave()">
+          <img class="customize customizeDirector pointer" src="{{colors[currentCompany].customIcon}}" alt="" ng-mouseover="customMouseOver()" ng-mouseleave="customMouseLeave()">
           <p  ng-hide="currentPage === 5">click to customize</p>
           <img class="point" src="./images/point.png" alt="" ng-hide="currentPage === 5">
         </div>
@@ -101,9 +90,6 @@
 
       <!--        PAGEBODY         -->
       <div class="pageBody hidden flexRow">
-
-        <!-- NAV SLIDER -->
-        <div class="navSlider"></div>
 
         <!--        SIDEBAR         -->
         <div class="sideBar flexRow" ng-hide="currentPage === 5 || currentPage === 'loading'">
@@ -117,13 +103,13 @@
 
               <!--        CART SECTION         -->
               <div class="cartItemsHolder">
-                <div id={{$index}} class="cartItem flexRow" ng-repeat="cartItem in cartItems track by $index">
-                  <img src={{cartItem.img}} alt="">
+                <div id={{$index}} class="cartItem flexRow" ng-repeat="shoppingCartItem in shoppingCartItems track by $index">
+                  <img src={{shoppingCartItem.img}} alt="">
                   <div class="cartItemDescriptionSection">
-                    <h2 class="cartItemDescription">{{cartItem.name}}</h2>
-                    <h2 class="cartItemPrice"><span>{{cartItem.price}}</span><span ng-if="cartItem.multiple && (cartItem.multiple > 1)"> x {{cartItem.multiple}}</span></h2>
+                    <h2 class="cartItemDescription">{{shoppingCartItem.name}}</h2>
+                    <h2 class="cartItemPrice"><span>{{shoppingCartItem.price}}</span><span ng-if="shoppingCartItem.quantity > 1"> x {{shoppingCartItem.quantity}}</span></h2>
                   </div>
-                  <div data-cartId={{$index}} class="xBtn pointer" ng-click='removeFromCart($index)'><p>x</p></div>
+                  <div data-cartId={{$index}} class="xBtn pointer" ng-click='removeItemFromShoppingCart(shoppingCartItem)'><p>x</p></div>
                 </div>
               </div>
 
@@ -171,8 +157,10 @@
 
         <!--        ITEM SECTION         -->
         <div class="itemSection flexRow" ng-if="productPageIndexes.includes(currentPage)">
-          <div id={{$index}} class="itemBox flexCol" ng-repeat="product in pageProducts track by $index" ng-mouseover="showOptions($event)" ng-mouseleave="hideOptions($event)">
+          <div class="itemTopBar">
 
+          </div>
+          <div id={{$index}} class="itemBox flexCol" ng-repeat="product in pageProducts track by $index" ng-mouseover="showOptions($event)" ng-mouseleave="hideOptions($event)">
             <div id={{$index}} class="itemPreview">
               <img data={{$index}} src={{product.img}} class="itemImage itemImg" alt="">
               <div class="itemDesciption flexRow">
@@ -201,11 +189,15 @@
               <div class="optionsBgColor"></div>
               <div class="optionsScreen flexRow">
                 <div ng-if='clickIt'>
-                  <img class="customizeItems pointer" src={{customIcon}} alt="">
+                  <img class="customizeItems pointer" src={{colors[currentCompany].customIcon}} alt="">
                   <div data={{$index}} view class="pointer" ng-click="closeView(product, $event, $index)"></div>
                   <div tocart class="pointer"></div>
                 </div>
               </div>
+            </div>
+
+            <div data={{$index}} class="">
+              hey
             </div>
           </div>
 
@@ -232,23 +224,23 @@
             </div>
 
             <div class="reviewItems">
-              <div class="itemToReview flexRow" ng-repeat='checkoutItem in cartItems'>
+              <div class="itemToReview flexRow" ng-repeat='shoppingCartItem in shoppingCartItems'>
                 <div class="reviewImg flexRow">
-                  <img src={{checkoutItem.img}} alt="">
+                  <img src={{shoppingCartItem.img}} alt="">
                 </div>
                 <div class="reviewPrice flexRow">
-                  <p>{{checkoutItem.price}}</p>
+                  <p>{{shoppingCartItem.price}}</p>
                 </div>
                 <div class="reviewQuantity flexCol">
                   <div class="quantityNumber flexRow flexRow">
-                    <p ng-if="checkoutItem.multiple">{{checkoutItem.multiple}}</p>
-                    <p ng-if="!checkoutItem.multiple">1</p>
+                    <p ng-if="shoppingCartItem.quantity">{{shoppingCartItem.quantity}}</p>
+                    <p ng-if="!shoppingCartItem.quantity">1</p>
                   </div>
                   <div class="quantityChange flexRow">
-                    <div class="increment flexRow pointer" ng-click="incrementCartItem(checkoutItem)">
+                    <div class="increment flexRow pointer" ng-click="incrementCartItem(shoppingCartItem)">
                       <p>+</p>
                     </div>
-                    <div class="decrement flexRow pointer" ng-click="decrementCartItem(checkoutItem)">
+                    <div class="decrement flexRow pointer" ng-click="decrementCartItem(shoppingCartItem)">
                       <p>-</p>
                     </div>
                   </div>
@@ -273,6 +265,24 @@
               <div data="signUpSubmit" class="submit flexRow pointer" ng-click='proceedToCheckout()'>
                 <p>PROCEED TO CHECKOUT</p>
               </div>
+            </div>
+          </div>
+          <div class="cardCheckOut flexRow">
+            <div class="">
+              <script src="https://js.stripe.com/v3/"></script>
+
+              <form class="cartForm" action="/charge" method="post" id="payment-form">
+                <div class="form-row">
+                  <div id="card-element">
+                    <!-- a Stripe Element will be inserted here. -->
+                  </div>
+
+                  <!-- Used to display form errors -->
+                  <div id="card-errors" role="alert"></div>
+                </div>
+
+                <button class="shoppingCartBtn flexRow pointer"><p>SUBMIT PAYMENT</p></button>
+              </form>
             </div>
           </div>
         </div>
@@ -318,27 +328,50 @@
       </div>
     </div>
 
-    <div class="shoppingCart flexCol" ng-if="currentPage === 'shoppingCart'">
-      <div class="creditCard flexRow">
-        <div class="cardInfo flexRow">
+    <div class="shoppingCart flexRow" ng-if="currentPage === 'shoppingCart'">
 
-          <script src="https://js.stripe.com/v3/"></script>
+      <div class="shoppingCartContainer flexRow">
+        <div class="shoppingCartLeftSide flexRow">
+          <div class="">
+            <script src="https://js.stripe.com/v3/"></script>
 
-          <form class="cartForm" action="/charge" method="post" id="payment-form">
-            <div class="form-row">
-              <div id="card-element">
-                <!-- a Stripe Element will be inserted here. -->
+            <form class="cartForm" action="/charge" method="post" id="payment-form">
+              <div class="form-row">
+                <div id="card-element">
+                  <!-- a Stripe Element will be inserted here. -->
+                </div>
+
+                <!-- Used to display form errors -->
+                <div id="card-errors" role="alert"></div>
               </div>
 
-              <!-- Used to display form errors -->
-              <div id="card-errors" role="alert"></div>
+              <button class="shoppingCartBtn flexRow pointer"><p>Submit Payment</p></button>
+            </form>
+          </div>
+        </div>
+
+        <div class="shoppingCartRightSide flexCol none">
+          <div id='creditCard' class='flexRow'>
+            <div id='creditCardTop' class='creditCardComponents'>
+              <p>Bank</p>
             </div>
-
-            <button class="shoppingCartBtn flexRow pointer"><p>Submit Payment</p></button>
-          </form>
-
+            <div id='creditCardBottom' class='creditCardComponents flexRow'>
+              <div id='cardNumbers' class='flexRow'>
+                <span>4242</span>
+                <span>4242</span>
+                <span>4242</span>
+                <span>4242</span>
+              </div>
+              <div id='creditCardBottomInfo' class='flexRow'>
+                <p class='creditCardName'>my name</p>
+                <p>02/22</p>
+              </div>
+            </div>
+          </div>
+          <div id='shadow'></div>
         </div>
       </div>
+
     </div>
 
     <script type="text/javascript">
@@ -418,14 +451,12 @@
 
     <style type="text/css">
       ::-webkit-scrollbar-thumb,
-      .navSlider,
-      .homeNavSlider,
       .itemNumber,
-      .optionsBgColor { background-color: {{themeColor}}; }
+      .optionsBgColor { background-color: {{colors[currentCompany].themeColor}}; }
 
-      .landingPageColorOne { background-color: {{themeColorOne}}; }
+      .landingPageColorOne { background-color: {{colors.landingPage.themeColorOne}}; }
 
-      .landingPageColorTwo { background-color: {{themeColorTwo}};}
+      .landingPageColorTwo { background-color: {{colors.landingPage.themeColorTwo}};}
 
       .itemPriceSection,
       .cartItemPrice,
@@ -433,21 +464,21 @@
       .viewBtn:hover,
       .xBtn p:hover,
       .imgHolder p ,
-      .navHighlight { color: {{themeColor}}; }
+      .navHighlight { color: {{colors[currentCompany].themeColor}}; }
 
-      .navigationBar { border-bottom: 0.1em solid {{borderThemeColor}}; }
+      .navigationBar { border-bottom: 0.1em solid {{colors[currentCompany].borderThemeColor}}; }
 
-      .sideBar { border-right: 0.1em solid {{borderThemeColor}}; }
+      .sideBar { border-right: 0.1em solid {{colors[currentCompany].borderThemeColor}}; }
 
       .checkBoxChecked {
-        background-color: {{themeColor}};
-        border-color: {{themeColor}};
+        background-color: {{colors[currentCompany].themeColor}};
+        border-color: {{colors[currentCompany].themeColor}};
       }
 
       .colorCircleSelected { border: 4px solid #777; }
 
-      .lpBtn:hover { background-color: {{landingPageBtnHoverColor}}; }
-      .lpBtn { background-color: {{landingPageBtnColor}}; }
+      .lpBtn:hover { background-color: {{colors[currentCompany].landingPageBtnHoverColor}}; }
+      .lpBtn { background-color: {{colors[currentCompany].landingPageBtnColor}}; }
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
