@@ -157,48 +157,91 @@
 
         <!--        ITEM SECTION         -->
         <div class="itemSection flexRow" ng-if="productPageIndexes.includes(currentPage)">
-          <div class="itemTopBar">
-
+          <div class="itemTopBar flexRow">
+            <p class="viewLabel">view: </p>
+            <div class="toggleViewBtn flexRow" ng-click='toggleView()'>
+              <div class="largeViewBtn flexRow" ng-if='!largeView'>
+                <div class="lvBox"></div>
+                <div class="lvBox"></div>
+                <div class="lvBox"></div>
+                <div class="lvBox"></div>
+              </div>
+              <div class="smallViewBtn flexRow" ng-if='largeView'>
+                <div class="svBox"></div>
+                <div class="svBox"></div>
+              </div>
+            </div>
           </div>
-          <div id={{$index}} class="itemBox flexCol" ng-repeat="product in pageProducts track by $index" ng-mouseover="showOptions($event)" ng-mouseleave="hideOptions($event)">
-            <div id={{$index}} class="itemPreview">
-              <img data={{$index}} src={{product.img}} class="itemImage itemImg" alt="">
-              <div class="itemDesciption flexRow">
-                <div class="desciption flexCol">
-                  <h2>{{product.name}}</h2>
-                  <p>{{product.desciption}}</p>
+          <div data={{$index}} class="productContainer flexCol" ng-repeat="product in pageProducts track by $index" ng-mouseover='showProductOptions($index)' ng-mouseleave='hideProductOptions($index)'>
+
+            <!-- PRODUCT IMAGE BOX -->
+            <div data={{$index}} class="productImgHolder">
+              <img src="{{product.img}}" alt="">
+            </div>
+
+            <!-- TO CART IMG -->
+            <div data={{$index}} class="cartImgHolder rotate90">
+              <img src="{{product.img}}" alt="">
+            </div>
+
+            <!-- PRODUCT DESCRIPTION BOX -->
+            <div data={{$index}} class="productDescriptionHolder flexRow">
+              <div class="productDescriptionSide"></div>
+              <div class="productDescriptionSide flexCol">
+                <div class="productDescriptionTitle productDescriptionSideChild flexRow">
+                  <h2 class="pdtitle">{{product.name}}</h2>
                 </div>
-                <div class="itemPriceSection flexRow">
-                  <h2>{{product.price}}</h2>
+                <div class="productDescriptionPrice productDescriptionSideChild flexRow">
+                  <h2 class="pdprice">{{product.price}}</h2>
+                </div>
+                <div class="productDescriptionDesciption productDescriptionSideChild flexRow">
+                  <h2 class="pddesciption">{{product.desciption}}</h2>
+                </div>
+                <div class="productDescriptionGalleryButton productDescriptionSideChild flexRow">
+                  <div data={{$index}} class="productDescriptionButton flexRow pointer" ng-click="closeView(product, $event, $index)">
+                    <p>VIEV GALLERY</p>
+                  </div>
+                </div>
+                <div class="productDescriptionCartButton productDescriptionSideChild flexRow">
+                  <div data={{$index}} class="productDescriptionButton flexRow pointer" ng-click='addItemToCart($index, product)'>
+                    <p>TO CART</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div id={{$index}} class="options">
-              <img src={{product.img}} class="itemImage" alt="">
-              <div class="itemDesciption flexRow">
-                <div class="desciption flexCol">
-                  <h2>{{product.name}}</h2>
-                  <p>{{product.desciption}}</p>
-                  <p class="details">{{product.details}}</p>
+            <!-- PRODUCT HOVER DESCRIPTION BOX -->
+            <div data={{$index}} class="hoverDescription flexRow">
+              <div class="hoverDescriptionText">
+                <div class="hoverDescriptionTextTop flexRow">
+                  <p>{{product.name}}</p>
+                  <p>{{product.price}}</p>
                 </div>
-                <div class="itemPriceSection flexRow">
-                  <h2>{{product.price}}</h2>
-                </div>
-              </div>
-              <div class="optionsBgColor"></div>
-              <div class="optionsScreen flexRow">
-                <div ng-if='clickIt'>
-                  <img class="customizeItems pointer" src={{colors[currentCompany].customIcon}} alt="">
-                  <div data={{$index}} view class="pointer" ng-click="closeView(product, $event, $index)"></div>
-                  <div tocart class="pointer"></div>
+                <div class="hoverDescriptionTextBottom">
+                  <p>{{product.details}}</p>
                 </div>
               </div>
             </div>
 
-            <div data={{$index}} class="">
-              hey
+            <!-- PRODUCT BUTTONS BOX -->
+            <div data={{$index}} class="hoverButtons behindImg">
+              <div class="hoverBtnHolder flexRow">
+                <div data={{$index}} class="hoverBtn flexRow pointer" ng-click="closeView(product, $event, $index)">
+                  <p>VIEV GALLERY</p>
+                </div>
+              </div>
+              <div class="hoverBtnHolder flexRow">
+                <div data={{$index}} class="hoverBtn flexRow pointer" ng-click='addItemToCart($index, product)'>
+                  <p>TO CART</p>
+                </div>
+              </div>
             </div>
+
+            <!-- PRODUCT HOVER CLEAR BOX -->
+            <div data={{$index}} class="hoverClearBox behindImg">
+
+            </div>
+
           </div>
 
         </div>
@@ -460,8 +503,6 @@
 
       .itemPriceSection,
       .cartItemPrice,
-      .addToCartBtn:hover,
-      .viewBtn:hover,
       .xBtn p:hover,
       .imgHolder p ,
       .navHighlight { color: {{colors[currentCompany].themeColor}}; }

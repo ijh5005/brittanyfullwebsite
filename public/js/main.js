@@ -146,27 +146,25 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }
   }
 
-  //cart moving
-  $scope.moveToCart = (e, index, eventObj) => {
-    $rootScope.loadingPage = true;
-    let switchImg = false;
-    $timeout(() => { $rootScope.loadingPage = false; }, 1800)
+  //product animations
+  $rootScope.largeView = false;
+  $rootScope.itemsOpen = false;
+  $scope.toggleView = () => {
+    $rootScope.largeView = !$rootScope.largeView;
+    task.toggleView();
+  }
+  $scope.showProductOptions = (data) => {
+    task.showProductOptions(data);
+  }
+  $scope.hideProductOptions = (data) => {
+    task.hideProductOptions(data);
+  }
 
-    $('.customizeDirector').css('opacity', 1);
-    $rootScope.trackItems++;
-    $rootScope.clickIt = false;
-    let nodeValue;
-    let indexValue;
-    if(eventObj){
-      nodeValue = eventObj.nodeValue;
-      indexValue = eventObj.indexValue;
-      switchImg = eventObj.currentlySelectedImg;
-    } else {
-      nodeValue = e.currentTarget.attributes[0].nodeValue;
-      indexValue = index;
-    }
-    const selector = '.itemImage[data=' + nodeValue + ']';
-    animate.itemToShoppingCart(selector, nodeValue, indexValue, switchImg);
+  //add to cart
+  $rootScope.clickTracker = 0;
+  $rootScope.addedTrackers = [];
+  $scope.addItemToCart = (data, product) => {
+    animate.addItemToCart(data, product);
   }
 
   //close view options
@@ -320,7 +318,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     const animation = { top: '100%' };
     const options = { duration: 100, complete };
     $('.options .itemDesciption').animate(animation, options);
-    console.log($('.options .itemDesciption'));
   }
   //need to be reviewed
 
@@ -596,69 +593,50 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
     $rootScope.for1sec = false;
   }
   //animate the item to the shopping cart
-  this.itemToShoppingCart = (selector, nodeValue, index, switchImg) => {
-    $('.shoppingCartBigView').hide();
-    $('.options').css('left', '100vw');
-    $timeout(() => {
-      $('.itemPreview').show();
-      $('body').append('<div data=\'' + nodeValue + 'clone\' class="itemImage" ng-click=\'moveToCart($event)\'></div>')
-      const $selector = $(selector);
-      const $clone = $('.itemImage[data=' + nodeValue + 'clone]');
+  this.addItemToCart = (data, product) => {
+    $rootScope.clickTracker++;
+    const tracker = $rootScope.clickTracker + product.img;
+    const $productContainer = $('.productContainer[data="' + data + '"]');
 
-      //find target position
-      const cartPostion = $('.cartItemHeading img').position();
+    //find target position
+    const cartPostion = $('.cartItemHeading img').position();
+    const height = '1.6em';
+    const width = '1.2em';
 
-      const height = '1.6em';
-      const width = '1.2em';
+    //add clone img to page
+    let movingImg = '';
+    movingImg += '<div class="cartImgHolder movingImg">';
+    movingImg += '<img src="' + product.img + '">';
+    movingImg += '</div>';
+    $('html').append(movingImg);
 
-      //if the shopping cart drop needs adjustments chang the dx and dy
-      const dx = 58;
-      const dy = 120;
+    const selfPosition = $productContainer.offset();
+    //position clone img
+    const $clone = $('.movingImg');
+    $clone.css('position', 'absolute')
+          .css('top', selfPosition.top)
+          .css('left', selfPosition.left);
 
-      const left = cartPostion.left + dx;
-      const top = cartPostion.top + dy;
+    //if the shopping cart drop needs adjustments chang the dx and dy
+    const dx = 58;
+    const dy = 120;
 
-      const inBag = top + 20;
+    const left = cartPostion.left + dx;
+    const top = cartPostion.top + dy;
+    const inBag = top + 20;
 
-      const selfPosition = $selector.position();
-      const cloneImg = (switchImg) ? switchImg : $rootScope.pageProducts[nodeValue].img;
-
-      $clone.css('position', 'absolute')
-            .css('top', selfPosition.top)
-            .css('left', selfPosition.left)
-            .css('height', '27.4em')
-            .addClass('fullBackground')
-            .css('backgroundImage', 'url(' + cloneImg + ')');
-
-      const animation = { left: left, top: top, height: height, width: width }
-      const animation2 = { top: inBag, opacity: 0 }
-      const complete = () => {
-        $clone.css('zIndex', -1);
-        $clone.animate(animation2)
-
-        const selectedItem = $rootScope.pageProducts[index];
-        selectedItem['img'] = (switchImg) ? switchImg : selectedItem['img'];
-
-        //timeout updates the DOM
-        $timeout(() => {
-          $rootScope.clickable = null;
-          if($rootScope.trackItems > data.cartItems.length){
-            //check for a cart dupplicate before adding in order to add a time "x" amount instead of I new item in the cart
-            if(!$rootScope.pauseChartAddition){
-              $rootScope.pauseChartAddition = true;
-              $timeout(() => { $rootScope.pauseChartAddition = false }, 3000);
-              const item = { name: selectedItem.name, img: selectedItem.img, price: selectedItem.price}
-              task.addToShoppingCart(item);
-            }
-          }
-        });
-        $timeout(() => {
-          $rootScope.clickIt = true;
-        }, 2000);
-      }
-      const options = { duration: 1000, complete }
-      $clone.animate(animation, options);
-    }, 50);
+    const animation = { left: left, top: top, height: height, width: width }
+    const animation2 = { top: inBag, opacity: 0 }
+    const options2  = { complete: function(){
+      const item = { name: product.name, img: product.img, price: product.price}
+      task.addToShoppingCart(item, tracker);
+    }}
+    const complete = () => {
+      $clone.css('zIndex', -1);
+      $clone.animate(animation2, options2)
+    }
+    const options = { duration: 1000, complete }
+    $clone.animate(animation, options);
   }
   this.customButton = () => {
     $('.point').show();
@@ -835,7 +813,13 @@ app.service('task', function($rootScope, $interval, $timeout, data){
     })
     return foundIndex;
   }
-  this.addToShoppingCart = (item) => {
+  this.addToShoppingCart = (item, tracker) => {
+    //prevent unrequested multiple carts
+    if($rootScope.addedTrackers.includes(tracker)){
+      return null;
+    }
+
+    $rootScope.addedTrackers.push(tracker);
     const isInShoppingCart = $rootScope.individualItemsInShoppingCart.includes(item.img);
     if(isInShoppingCart){
       $rootScope.shoppingCartItems.map((shoppingCartItem) => {
@@ -852,8 +836,6 @@ app.service('task', function($rootScope, $interval, $timeout, data){
       $rootScope.shoppingCartItems.push(imgObj);
       $rootScope.individualItemsInShoppingCart.push(img);
     }
-    console.log($rootScope.shoppingCartItems);
-    console.log($rootScope.individualItemsInShoppingCart);
   }
   this.removeItemFromShoppingCart = (item) => {
     let arrayIndex;
@@ -916,16 +898,71 @@ app.service('task', function($rootScope, $interval, $timeout, data){
       }
     }, 150);
   }
-});
-
-app.directive("tocart", function($rootScope) {
-  return {
-    template: '<div data={{$index}} disableclick class="addToCartBtn flexRow pointer" ng-click="moveToCart($event, $index)"><p data={{$index}} disableclick class="addToChartText" ng-click="moveToCart($event, $index)">ADD TO CART</p></div>'
+  this.toggleView = () => {
+    const $productContainer = $('.productContainer');
+    const firstItemIndex = 0;
+    const secondItemIndex = 1;
+    if(!$rootScope.itemsOpen){
+      //hide all item accept the first two
+      $('.itemSection').addClass('fixContent');
+      $productContainer.map((index, item) => {
+        if(index != firstItemIndex && index!= secondItemIndex){
+          $('.productContainer[data="' + index + '"]').addClass('removeItem');
+        }
+      })
+      $rootScope.itemsOpen = !$rootScope.itemsOpen;
+      $('.productContainer').css('width', '36em');
+      $('.productDescriptionHolder').css('left', 0);
+      $timeout(() => {
+        $('.productImgHolder').addClass('rotate90');
+        $('.hoverDescription').addClass('rotate90');
+      }, 300).then(() => {
+        $timeout(() => {
+          $('.itemSection').removeClass('fixContent');
+          $('.productContainer').removeClass('removeItem');
+          $('.cartImgHolder').css('zIndex', 1).removeClass('rotate90');
+        }, 300);
+      });
+    } else {
+      $('.cartImgHolder').addClass('rotate90');
+      $('.itemSection').addClass('fixContent');
+      $productContainer.map((index, item) => {
+        if(index != firstItemIndex && index!= secondItemIndex){
+          $('.productContainer[data="' + index + '"]').addClass('removeItem');
+        }
+      })
+      $timeout(() => {
+        $('.hoverButtons').hide();
+        $('.cartImgHolder').css('zIndex', -1);
+        $('.productImgHolder').removeClass('rotate90');
+        $('.hoverDescription').removeClass('rotate90');
+        $rootScope.itemsOpen = !$rootScope.itemsOpen;
+        $('.productContainer').css('width', '18em');
+        $('.productDescriptionHolder').css('left', '18em');
+      }, 300).then(() => {
+        $timeout(() => {
+          $('.hoverButtons').show();
+        }, 300).then(() => {
+          $timeout(() => {
+            $('.itemSection').removeClass('fixContent');
+            $('.productContainer').removeClass('removeItem');
+          }, 200);
+        });
+      });
+    }
   }
-});
-
-app.directive("view", function($rootScope) {
-  return {
-    template: '<div data={{$index}} disableclick class="viewBtn flexRow pointer"><p data={{$index}} disableclick class="addToChartText">VIEW GALLERY</p></div>'
+  this.showProductOptions = (data) => {
+    if(!$rootScope.itemsOpen){
+      $('.hoverDescription[data="' + data + '"]').addClass('showDescripton');
+      $('.hoverButtons[data="' + data + '"]').removeClass('behindImg');
+      $('.hoverClearBox[data="' + data + '"]').removeClass('behindImg');
+    }
+  }
+  this.hideProductOptions = (data) => {
+    if(!$rootScope.itemsOpen){
+      $('.hoverDescription[data="' + data + '"]').removeClass('showDescripton');
+      $('.hoverButtons[data="' + data + '"]').addClass('behindImg');
+      $('.hoverClearBox[data="' + data + '"]').addClass('behindImg');
+    }
   }
 });
