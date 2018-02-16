@@ -8,20 +8,8 @@ var app = angular.module('app', []);
 
 app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task){
 
-  const hiddenNavigationOptions = () => {
-    $(".navOptions[data=3]").hide();
-    $(".navOptions[data=4]").hide();
-  }
-  $interval(() => { hiddenNavigationOptions() })
-
   //sign up page
   $scope.submitBtnText = '';
-  $scope.hideSignInPage = () => {
-    const onSignInPage = ($rootScope.currentSignPage === 'signin') || ($rootScope.currentSignPage === 'signup');
-    if(onSignInPage && $rootScope.for1sec){
-      animate.hideSignIngPage();
-    }
-  }
   $scope.signUpButton = (page) => {
     if(page === 'onLandingPage'){
       animate.toSignFormPage('signup');
@@ -100,7 +88,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
 
   $scope.mainPageIndexes = [1, 2, 3, 4, 5, "loading"];
   $scope.productPageIndexes = [1, 2];
-  $scope.navOptions = ['HOME', 'SEW & SO', 'BRANDI', 'DESIGNERS', 'CONTACT', 'CHECKOUT'];
+  $scope.navOptions = ['HOME', 'SEW & SO', 'LESSONS', 'CHECKOUT'];
   $scope.filters = data.filters;
 
   $scope.logIn = (pageIndex) => {
@@ -126,7 +114,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
         $('.movingBoxText').text($scope.navOptions[1]);
         $rootScope.isIntervalInProgress = false;
         $rootScope.onHomePage = true;
-        $timeout(() => { animate.landingPage(); }, 2000)
       } else if (pageIndex === 1) {
         animate.slider(pageIndex);
         $rootScope.currentCompany = $rootScope.firstCompany;
@@ -194,7 +181,7 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     $(".shoppingCartBigView").fadeIn();
   }
 
-  //cutsome button
+  //custome button
   $scope.customMouseOver = () => {
     $('.imgHolder p').css('opacity', 1);
     $('.customizeDirector').css('opacity', 1);
@@ -255,29 +242,14 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
       landingPageBtnHoverColor: '#430909',
       customIcon: './images/sewing.png'
     },
-    brandiCompanyColors: {
-      themeColor: '#5b94ef',
-      borderThemeColor: '#e8f0fd',
-      landingPageBtnColor: '#4585ed',
-      landingPageBtnHoverColor: '#0b3474',
-      customIcon: './images/crochet.png'
-    },
-    otherPage: {
-      themeColor: '#999',
-      landingPageBtnColor: '#777',
-      landingPageBtnHoverColor: '#444'
-    },
     landingPage: {
       themeColorOne: '#ed7d7d',
       themeColorTwo: '#5b94ef'
     }
   }
   $rootScope.firstCompany = Object.keys($rootScope.colors)[0];
-  $rootScope.secondCompany = Object.keys($rootScope.colors)[1];
-  $rootScope.thirdCompany = Object.keys($rootScope.colors)[2];
 
   $rootScope.sew_products;
-  $rootScope.crochet_products;
   $rootScope.pageProducts;
   $rootScope.currentPage = 0;
   $rootScope.currentSignPage = '';
@@ -286,7 +258,6 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.successfullyLoggedIn = false;
   $rootScope.pauseChartAddition = false;
   $rootScope.sew_products;
-  $rootScope.crochet_products;
 
   //shopping cart items
   $rootScope.individualItemsInShoppingCart = [];
@@ -364,14 +335,11 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.clickIt = true;
   $rootScope.trackItems = 0;
   $rootScope.currentItem;
-  $rootScope.landingPageAnimationInterval;
 
   //add ids to the cart items => brittanys id start with 1000, brandis 2000, so on
   $rootScope.sew_products = task.assignIDs(sew_products);
-  $rootScope.crochet_products = task.assignIDs(crochet_products);
 
   task.init();
-  $timeout(() => { animate.landingPage(); })
   animate.customButton();
   task.checkoutItemsTotal();
 }]);
@@ -667,92 +635,11 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
     //   $(".imgHolder").animate(animation, options);
     // }, 1000)
   }
-  this.landingPage = () => {
-    //set a watch for homepage
-    $('.lpBtn').click(() => { $rootScope.onHomePage = false })
-
-    const $movingBox = $('.movingBox');
-    const $movingBoxP = $('.movingBoxText');
-    $movingBoxP.css('height', '1.4em');
-    const animationDuration = 500;
-    const intervalDuration = 4500;
-    const moveBoxText = ['Sew & So', 'Brandi Logo'];
-    let moveBoxTextIndex = 0;
-
-    $rootScope.landingPageAnimationInterval = $interval(() => {
-
-      //check to see if the interval has finished completing before starting another one
-      if($rootScope.isIntervalInProgress){ return false }
-      $rootScope.isIntervalInProgress = true;
-
-      //stop animation if not on home page
-      if(!$rootScope.onHomePage){
-        $interval.cancel($rootScope.landingPageAnimationInterval);
-        return null
-      }
-
-      const initialFirstPageColor = 'rgb(237, 125, 125)';
-      const initialSecondPageColor = 'rgb(91, 148, 239)';
-      const currentPageColor = $('.landingPageColorOne').css('backgroundColor');
-      const animation = { left: '0%' };
-      const onFirstCompanyPage = ($rootScope.currentCompany === $rootScope.firstCompany);
-      const onSecondCompanyPage = ($rootScope.currentCompany === $rootScope.secondCompany);
-      const modelNumber = (onFirstCompanyPage)  ? 2
-                        : (onSecondCompanyPage) ? 3
-                                                : 1;
-      const switchedColor = (onFirstCompanyPage)  ?  $rootScope.colors["sewAndSewColors"].themeColor : $rootScope.colors["brandiCompanyColors"].themeColor;
-
-      //animation start function
-      const start = () => {
-        moveBoxTextIndex++;
-        moveBoxTextIndex = (moveBoxTextIndex === moveBoxText.length) ? 0 : moveBoxTextIndex;
-        $movingBox.fadeOut(300);
-        $movingBoxP.css('height', '0em');
-        $movingBox.removeClass('movingBoxIn').addClass('movingBoxOut');
-        $timeout(() => {
-          $movingBox.removeClass('movingBoxOut').addClass('movingBoxStart');
-          $movingBoxP.text(moveBoxText[moveBoxTextIndex]);
-        }, 400).then(() => {
-          $timeout(() => {
-            $movingBox.fadeIn(750);
-            $movingBox.addClass('movingBoxIn');
-          }, 100).then(() => {
-            $timeout(() => {
-              $movingBoxP.css('height', '1.4em');
-            }, 200)
-          })
-        });
-
-        //choose next page to cmoe in
-        $rootScope.currentCompany = (onFirstCompanyPage)  ? 'brandiCompanyColors' : 'sewAndSewColors';
-      }
-
-      //animation complete function
-      const complete = () => {
-        if(modelNumber != 3){ $('.homeImg img').fadeIn(500).attr('src', './images/model' + modelNumber + '.png'); }
-        $('.landingPageColorOne').css('backgroundColor', $rootScope.colors[$rootScope.currentCompany].themeColor);
-        $('.landingPageColorTwo').css('left', '100%').css('backgroundColor', switchedColor);
-        $rootScope.isIntervalInProgress = false;
-      }
-
-      //animation options function
-      const options = { duration: animationDuration, start: start, complete: complete };
-
-      //start the animation
-      const startAnimation = () => {
-        $('.homeImg img').fadeOut(400);
-        $('.landingPageColorTwo').animate(animation, options);
-      }
-
-      //start the animation
-      startAnimation('firstColor');
-    }, intervalDuration)
-  }
 });
 
 app.service('data', function($rootScope, $interval, $timeout){
   this.setPageProducts = (pageIndex) => {
-    let pageProducts = (pageIndex === 1) ? $rootScope.sew_products : $rootScope.crochet_products;
+    let pageProducts =  $rootScope.sew_products;
     return pageProducts;
   }
 

@@ -47,30 +47,42 @@
       </div>
     </div>
 
+    <!-- ng-click='logIn(1)'><p>SEW & SO
+    ng-click='logIn(2)'><p>BRANDI PAGE
+    ng-click="signUpButton('onLandingPage')"><p>SIGN UP
+    ng-click="signInButton('onLandingPage')"><p>SIGN IN -->
+
     <!--        LANDING PAGE         -->
     <div class="landingPage flexRow" ng-if="currentPage === 0" ng-click='hideSignInPage()'>
-      <div class="homePageContainer flexCol">
-        <div class="topHomePage flexRow">
-          <div class="movingBox"></div>
-          <p class="movingBoxText">Sew & So</p>
-          <div class="landingPageButtonSection flexRow">
-            <div class="landingPageBtns flexRow">
-              <div data="0" class="lpBtn flexRow brittanyPage" ng-click='logIn(1)'><p>SEW & SO</p></div>
-              <div data="1" class="lpBtn flexRow brandiPage" ng-click='logIn(2)'><p>BRANDI PAGE</p></div>
-              <div class="lpBtn flexRow signUp" ng-click="signUpButton('onLandingPage')"><p>SIGN UP</p></div>
-              <div class="lpBtn flexRow loginBtn" ng-click="signInButton('onLandingPage')"><p>SIGN IN</p></div>
+
+      <div id="homePageHolder" class="flexRow">
+        <div id="homePage">
+          <div id="homePageTop" class="flexRow">
+            <div id="homePageTopLeft" class="flexCol">
+              <div id="homePageTopLeftTopBar"></div>
+              <div id="homePageTopLeftBottom"></div>
+            </div>
+            <div id="homePageTopRight" class="pointer" ng-click='logIn(1)'>
+              <div id="homePageTopRightTopBar"></div>
+              <div id="homePageTopRightBottom" class="flexRow">
+                <p>Sew & So</p>
+              </div>
             </div>
           </div>
-          <div class="landingPageColorOne"></div>
-          <div class="landingPageColorTwo"></div>
-          <div class="homeImg">
-            <!-- <img src="./images/model1.png" alt=""> -->
+          <div id="homePageBottom" class="flexRow">
+            <div id="homePageBottomLeft" class="flexCol">
+              <p class="firstp">SEWING LESSONS</p>
+              <p class="lastp">CROCHE LESSON</p>
+            </div>
+            <div id="homePageBottomRight" class="pointer">
+              <div id="previousBox">
+
+              </div>
+            </div>
           </div>
         </div>
-        <div class="bottomHomePage">
-
-        </div>
       </div>
+
     </div>
 
     <!--      MAIN PAGE       -->
@@ -525,7 +537,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
     <script type="text/javascript" src="./js/databaseBrittany.js"></script>
-    <script type="text/javascript" src="./js/databaseBrandi.js"></script>
     <script type="text/javascript" src="./js/main.js"></script>
   </body>
 </html>
