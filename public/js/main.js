@@ -1,31 +1,100 @@
 'use strict';
 
+$(document).ready(() => {
+  $('body').removeClass('none');
+})
+
 var app = angular.module('app', []);
 
-app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', 'navigate', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task, navigate){
+app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backend', 'animate', 'data', 'task', function($scope, $rootScope, $interval, $timeout, backend, animate, data, task){
 
-  const hiddenNavigationOptions = () => {
-    $(".navOptions[data=3]").hide();
-    $(".navOptions[data=4]").hide();
+  //sign up page
+  $scope.submitBtnText = '';
+  $scope.signUpButton = (page) => {
+    if(page === 'onLandingPage'){
+      animate.toSignFormPage('signup');
+      $scope.submitBtnText = 'sign up';
+    } else {
+      $('.signFormMessage').fadeOut();
+      $scope.submitBtnText = 'sign up';
+      $rootScope.currentSignPage = 'signup';
+      $rootScope.signUp = "signOption";
+      $rootScope.signIn = "";
+    }
   }
-  $interval(() => { hiddenNavigationOptions() })
-  //optimized processes
+  $scope.signInButton = (page) => {
+    if(page === 'onLandingPage'){
+      animate.toSignFormPage('signin');
+      $scope.submitBtnText = 'sign in';
+    } else {
+      $('.signFormMessage').fadeOut();
+      $scope.submitBtnText = 'sign in';
+      $rootScope.currentSignPage = "signin";
+      $rootScope.signUp = "";
+      $rootScope.signIn = "signOption";
+    }
+  }
+  $scope.signUpSubmit = () => {
+    const firstname = $('.signUpFirstname').val();
+    const lastname = $('.signUpLastname').val();
+    const username = $('.signUpUsername').val();
+    const password = $('.signUpPassword').val();
+    const confirmPassword = $('.signUpConfirmPassword').val();
+    const url = "/register";
+    const signUpObj = { firstname: firstname, lastname: lastname, username: username, password: password }
 
-  $scope.themeColor;
-  $scope.borderThemeColor;
-  $scope.customIcon;
+    const hasEmptyField = task.hasEmptyFieldCheck(signUpObj);
+    const passwordDontMatch = (password != confirmPassword);
+
+    if(passwordDontMatch){
+      $(".signFormMessage p").text("Please confirm your passwords match. Thanks!");
+      $('.signFormMessage').fadeIn();
+    } else if(hasEmptyField){
+      $(".signFormMessage p").text("Please fill in all fields. Thanks!");
+      $('.signFormMessage').fadeIn();
+    } else {
+      backend.register(signUpObj, url);
+    }
+  }
+  $scope.signInSubmit = () => {
+    const username = $('.signInUsername').val();
+    const password = $('.signInPassword').val();
+    const url = "/login";
+    const signInObj = { username: username, password: password }
+
+    const hasEmptyField = task.hasEmptyFieldCheck(signInObj);
+
+    if(hasEmptyField){
+      $(".signFormMessage p").text("Please fill in all fields. Thanks!");
+      $('.signFormMessage').fadeIn();
+      return null;
+    }
+
+    backend.loginRequest(signInObj, url);
+
+    const checkForLogIn = $interval(function () {
+      if($rootScope.successfullyLoggedIn != true){ return null }
+      $interval.cancel(checkForLogIn);
+      $rootScope.successfullyLoggedIn = false;
+      $rootScope.pageProducts = data.setPageProducts(1);
+      animate.homeNav(1);
+      $timeout(() => {
+        //navigation highlight
+        $(".navOptions").removeClass("navHighlight");
+        $(".navOptions[data=" + 1 + "]").addClass("navHighlight");
+      }, 1000);
+    }, 10);
+  }
+
   $scope.mainPageIndexes = [1, 2, 3, 4, 5, "loading"];
   $scope.productPageIndexes = [1, 2];
-  $scope.navOptions = ['HOME', 'SEW & SO', 'BRANDI', 'DESIGNERS', 'CONTACT', 'CHECKOUT'];
+  $scope.navOptions = ['HOME', 'SEW & SO', 'LESSONS', 'CHECKOUT'];
   $scope.filters = data.filters;
 
   $scope.logIn = (pageIndex) => {
-    const themeColorObj = task.setThemeColor(pageIndex);
-    $scope.customIcon = task.setCostIcon(pageIndex);
-    $scope.themeColor = themeColorObj.themeColor;
-    $scope.borderThemeColor = themeColorObj.borderThemeColor;
+    $rootScope.currentCompany = (pageIndex === 1) ? $rootScope.firstCompany : $rootScope.secondCompany;
     $rootScope.pageProducts = data.setPageProducts(pageIndex);
-    animate.homeSlider(pageIndex);
+    animate.homeNav(pageIndex);
     $timeout(() => {
       //navigation highlight
       $(".navOptions").removeClass("navHighlight");
@@ -33,42 +102,32 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }, 1000);
   }
   $scope.navigate = (e) => {
-    if($rootScope.loadingPage === true){ return null }
-    $rootScope.loadingPage = true;
-    $timeout(() => { $rootScope.loadingPage = false; }, 2000)
-
     const pageIndex = parseInt(e.currentTarget.attributes.data.nodeValue);
-    if(pageIndex != $rootScope.currentPage){
+    const isOnClickedPage = pageIndex == $rootScope.currentPage;
+    if(!isOnClickedPage){
+      if($rootScope.loadingPage === true){ return null }
+      $rootScope.loadingPage = true;
+      $timeout(() => { $rootScope.loadingPage = false; }, 1600)
+
       if(pageIndex === 0){
-        $rootScope.landingPageBtnHoverColor = '#430909';
-        $rootScope.landingPageBtnColor = '#ea6262';
-        animate.homeSlider(pageIndex);
+        animate.homeNav(pageIndex);
         $('.movingBoxText').text($scope.navOptions[1]);
         $rootScope.isIntervalInProgress = false;
         $rootScope.onHomePage = true;
-        $timeout(() => { animate.landingPage(); }, 2000)
       } else if (pageIndex === 1) {
         animate.slider(pageIndex);
-        //variables that change after the slider covers the screen
-        $scope.themeColor =  $rootScope.redThemeColor;
-        $scope.borderThemeColor = $rootScope.redBorderThemeColor;
-        $scope.customIcon = "./images/sewing.png";
+        $rootScope.currentCompany = $rootScope.firstCompany;
         $timeout(() => {
           $rootScope.pageProducts = data.setPageProducts(pageIndex);
-        }, 600)
+        })
       } else if (pageIndex === 2) {
         animate.slider(pageIndex);
-        //variables that change after the slider covers the screen
-        $scope.themeColor = $rootScope.blueThemeColor;
-        $scope.borderThemeColor = $rootScope.blueBorderThemeColor;
-        $scope.customIcon = "./images/crochet.png";
+        $rootScope.currentCompany = $rootScope.secondCompany;
         $timeout(() => {
           $rootScope.pageProducts = data.setPageProducts(pageIndex);
-        }, 600)
+        })
       } else if (pageIndex === 5) {
-        $scope.themeColor =  $rootScope.redThemeColor;
-        $scope.borderThemeColor = $rootScope.redBorderThemeColor;
-        $scope.customIcon = "./images/shoppingBag.png";
+        $rootScope.currentCompany = 'sewAndSewColors';
         animate.slider(pageIndex);
         $('.cartItemsHolder').css('maxHeight', '45em');
       } else {
@@ -78,80 +137,60 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     }
   }
 
-  //cart moving
-  $scope.moveToCart = (e, index, eventObj) => {
-    $scope.inLargeView = false;
-    $('.customizeDirector').css('opacity', 1);
-    $rootScope.trackItems++;
-    $rootScope.clickIt = false;
-    let nodeValue;
-    let indexValue;
-    if(eventObj){
-      nodeValue = eventObj.nodeValue;
-      indexValue = eventObj.indexValue;
-    } else {
-      nodeValue = e.currentTarget.attributes[0].nodeValue;
-      indexValue = index;
-    }
-    const selector = '.itemImage[data=' + nodeValue + ']';
-    debugger
-    animate.itemToShoppingCart(selector, nodeValue, indexValue);
+  //product animations
+  $rootScope.largeView = false;
+  $rootScope.itemsOpen = false;
+  $scope.toggleView = () => {
+    $rootScope.largeView = !$rootScope.largeView;
+    task.toggleView();
   }
-  $scope.removeFromCart = (index) => {
-    task.removeMultipleFromProductData(index);
-    $scope.cartItems.splice(index, 1);
-    $scope.checkoutItems.splice(index, 1);
-    $rootScope.trackItems--;
+  $scope.showProductOptions = (data) => {
+    task.showProductOptions(data);
+  }
+  $scope.hideProductOptions = (data) => {
+    task.hideProductOptions(data);
+  }
+
+  //add to cart
+  $rootScope.clickTracker = 0;
+  $rootScope.addedTrackers = [];
+  $scope.addItemToCart = (data, product) => {
+    animate.addItemToCart(data, product);
   }
 
   //close view options
-  $scope.currentCloseView;
-  $scope.closeViewSlides;
-  $scope.currentIndex;
-  $scope.slidesLength;
   $scope.eventObj = {};
-  $scope.closeView = (product, e, index) => {
+  $scope.currentCloseView = '';
+  $scope.smallViewImgOne = '';
+  $scope.smallViewImgTwo = '';
+  $scope.smallViewImgThree = '';
+  $scope.changeCloseViewItem = (item) => {
+    $scope.currentCloseView = $scope[item];
+    $scope.eventObj["currentlySelectedImg"] = $scope[item];
+  }
 
+  $scope.closeView = (product, e, index) => {
+    $scope.currentCloseView = product.img;
+    $scope.smallViewImgOne = product.imgSlideShow[0];
+    $scope.smallViewImgTwo = product.imgSlideShow[1];
+    $scope.smallViewImgThree = product.imgSlideShow[2];
     const nodeValue = e.currentTarget.attributes[0].nodeValue;
     $scope.eventObj["nodeValue"] = nodeValue;
     $scope.eventObj["indexValue"] = index;
-
+    $scope.eventObj["currentlySelectedImg"] = product.imgSlideShow[0];
     $(".shoppingCartBigView").fadeIn();
-    $scope.closeViewSlides = product.imgSlideShow;
-    $scope.currentIndex = 0;
-    $scope.slidesLength = product.imgSlideShow.length;
-    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
-  }
-  $scope.closeViewRightClick = () => {
-    const atLastIndex = (++$scope.currentIndex === $scope.slidesLength)
-    $scope.currentIndex = atLastIndex ? 0 : $scope.currentIndex++;
-    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
-  }
-  $scope.closeViewLeftClick = () => {
-    const atFirstIndex = (--$scope.currentIndex < 0);
-    $scope.currentIndex = atFirstIndex ? ($scope.slidesLength - 1) : $scope.currentIndex--;
-    $scope.currentCloseView = $scope.closeViewSlides[$scope.currentIndex];
   }
 
-  //cutsome button
+  //custome button
   $scope.customMouseOver = () => {
     $('.imgHolder p').css('opacity', 1);
     $('.customizeDirector').css('opacity', 1);
   }
   $scope.customMouseLeave = () => {
     $('.imgHolder p').css('opacity', 0);
-    if($scope.inLargeView){
-        $('.customizeDirector').css('opacity', 0.4);
-    }
   }
 
-  //cart quantity
-  $scope.incrementCartItem = (item) => {
-    task.increment(item);
-  }
-  $scope.decrementCartItem = (item) => {
-    task.decrement(item);
-  }
+
 
   //check out
   $scope.proceedToCheckout = () => {
@@ -191,43 +230,73 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
 
   $rootScope.signUp = "";
   $rootScope.signIn = "";
-  $rootScope.landingPageBtnHoverColor = '#430909';
-  $rootScope.landingPageBtnColor = '#ea6262';
-  $rootScope.landingPageBtnBorderColor = '#e74b4b';
-  $rootScope.themeColorOne = '#ed7d7d';
-  $rootScope.themeColorTwo = '#5b94ef';
   $rootScope.loadingPage = false;
   $rootScope.onHomePage = true;
 
+  $rootScope.currentCompany = 'sewAndSewColors';
+  $rootScope.colors = {
+    sewAndSewColors: {
+      themeColor: '#ed7d7d',
+      borderThemeColor: '#fce9e9',
+      landingPageBtnColor: '#ea6262',
+      landingPageBtnHoverColor: '#430909',
+      customIcon: './images/sewing.png'
+    },
+    landingPage: {
+      themeColorOne: '#ed7d7d',
+      themeColorTwo: '#5b94ef'
+    }
+  }
+  $rootScope.firstCompany = Object.keys($rootScope.colors)[0];
+
   $rootScope.sew_products;
-  $rootScope.crochet_products;
   $rootScope.pageProducts;
-  $rootScope.blueThemeColor = "rgb(91, 148, 239)";
-  $rootScope.blueBorderThemeColor = "rgb(232, 240, 253)";
-  $rootScope.redThemeColor = "rgb(237, 125, 125)";
-  $rootScope.redBorderThemeColor = "rgb(252, 233, 233)";
-  $rootScope.customSewingIcon = "./images/sewing.png";
-  $rootScope.customCrochetIcon = "./images/crochet.png";
   $rootScope.currentPage = 0;
+  $rootScope.currentSignPage = '';
+  $rootScope.for1sec = false;
   $rootScope.navOptions = data.navOptions;
   $rootScope.successfullyLoggedIn = false;
   $rootScope.pauseChartAddition = false;
   $rootScope.sew_products;
-  $rootScope.crochet_products;
 
-  //need to be reviewed
+  //shopping cart items
+  $rootScope.individualItemsInShoppingCart = [];
+  $rootScope.shoppingCartItems = [];
+  $rootScope.cartIndex = 0;
+  $scope.incrementCartItem = (item) => {
+    task.increment(item);
+  }
+  $scope.decrementCartItem = (item) => {
+    task.decrement(item);
+  }
+  $scope.removeItemFromShoppingCart = (item) => {
+    task.removeItemFromShoppingCart(item);
+  }
+  $rootScope.checkoutItemsTotal;
 
-  $scope.cartItems = data.cartItems;
-  $scope.checkoutItems = data.checkoutItems;
-  $scope.checkoutItemsTotal;
 
   $scope.showOptions = (e) => {
     const id = parseInt(e.currentTarget.id);
     $rootScope.currentItem = id;
     $('.itemPreview[id='+ id + ']').hide();
     $('.options[id='+ id + ']').css('left', 0);
-    $('.options .itemDesciption').animate({ top: '60%' }, 100);
+    $('.options .itemDesciption').animate({ top: '60%' }, { duration: 100, complete: function(){
+      $rootScope.doneShowingOptions = true;
+    }});
   }
+  $scope.hideOptions = (e) => {
+    const id = parseInt(e.currentTarget.id);
+    const complete = () => {
+      $('.options[id='+ id + ']').css('left', '100vw');
+      $('.itemPreview[id='+ id + ']').show();
+    }
+    const animation = { top: '100%' };
+    const options = { duration: 100, complete };
+    $('.options .itemDesciption').animate(animation, options);
+  }
+  //need to be reviewed
+
+
   $scope.checkboxClick = (e, index) => {
     const attributes = e.currentTarget.attributes;
     const values = [];
@@ -251,98 +320,10 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
     if(isChecked){ $target.removeClass('colorCircleSelected') }
     else{ $target.addClass('colorCircleSelected') }
   }
-  $scope.hideOptions = (e) => {
-    const id = parseInt(e.currentTarget.id);
-    const complete = () => {
-      $('.options[id='+ id + ']').css('left', '100vw');
-      $('.itemPreview[id='+ id + ']').show();
-    }
-    const animation = { top: '100%' };
-    const options = { duration: 0, complete };
-    $('.options .itemDesciption').animate(animation, options);
-  }
+
   $scope.hideBigView = () => {
-    $scope.inLargeView = false;
     $('.shoppingCartBigView').hide();
     $('.customizeDirector').css('opacity', 1);
-  }
-
-  //sign in
-  $scope.signUpLandingPageBtn = () => {
-    animate.toSignFormPage('signup');
-  }
-  $scope.signInLandingPageBtn = () => {
-    animate.toSignFormPage('signin');
-  }
-  $scope.signUpButtonOption = () => {
-    $('.signFormMessage').fadeOut();
-    $rootScope.currentPage = "signup";
-    $rootScope.signUp = "signOption";
-    $rootScope.signIn = "";
-  }
-  $scope.signInButtonOption = () => {
-    $('.signFormMessage').fadeOut();
-    $rootScope.currentPage = "signin";
-    $rootScope.signUp = "";
-    $rootScope.signIn = "signOption";
-  }
-  $scope.signUpButton = () => {
-    const firstname = $('.signUpFirstname').val();
-    const lastname = $('.signUpLastname').val();
-    const username = $('.signUpUsername').val();
-    const password = $('.signUpPassword').val();
-    const confirmPassword = $('.signUpConfirmPassword').val();
-    const url = "/register";
-    const signUpObj = { firstname: firstname, lastname: lastname, username: username, password: password }
-
-    const hasEmptyField = task.hasEmptyFieldCheck(signUpObj);
-    const passwordDontMatch = (password != confirmPassword);
-
-    if(passwordDontMatch){
-      $(".signFormMessage p").text("Please confirm your passwords match. Thanks!");
-      $('.signFormMessage').fadeIn();
-    } else if(hasEmptyField){
-      $(".signFormMessage p").text("Please fill in all fields. Thanks!");
-      $('.signFormMessage').fadeIn();
-    } else {
-      backend.register(signUpObj, url);
-    }
-  }
-  $scope.signInButton = () => {
-    const username = $('.signInUsername').val();
-    const password = $('.signInPassword').val();
-    const url = "/login";
-    const signInObj = { username: username, password: password }
-
-    const hasEmptyField = task.hasEmptyFieldCheck(signInObj);
-
-    if(hasEmptyField){
-      $(".signFormMessage p").text("Please fill in all fields. Thanks!");
-      $('.signFormMessage').fadeIn();
-      return null;
-    }
-
-    backend.loginRequest(signInObj, url);
-
-    const checkForLogIn = $interval(function () {
-      if($rootScope.successfullyLoggedIn != true){ return null }
-      $interval.cancel(checkForLogIn);
-      $rootScope.successfullyLoggedIn = false;
-      const themeColorObj = task.setThemeColor(1);
-      $scope.customIcon = task.setCostIcon(1);
-      $scope.themeColor = themeColorObj.themeColor;
-      $scope.borderThemeColor = themeColorObj.borderThemeColor;
-      $rootScope.pageProducts = data.setPageProducts(1);
-      animate.homeSlider(1);
-      $timeout(() => {
-        //navigation highlight
-        $(".navOptions").removeClass("navHighlight");
-        $(".navOptions[data=" + 1 + "]").addClass("navHighlight");
-      }, 1000);
-    }, 10);
-  }
-  $scope.backFromSignFormPage = () => {
-    animate.backFromSignFormPage();
   }
 
   $rootScope.isIntervalInProgress = false;
@@ -354,17 +335,13 @@ app.controller('ctrl', ['$scope', '$rootScope', '$interval', '$timeout', 'backen
   $rootScope.clickIt = true;
   $rootScope.trackItems = 0;
   $rootScope.currentItem;
-  $rootScope.landingPageAnimationInterval;
 
   //add ids to the cart items => brittanys id start with 1000, brandis 2000, so on
   $rootScope.sew_products = task.assignIDs(sew_products);
-  $rootScope.crochet_products = task.assignIDs(crochet_products);
 
-  task.init($scope.themeColor);
-  $timeout(() => { animate.landingPage(); })
+  task.init();
   animate.customButton();
-  $interval(() => { $scope.checkoutItemsTotal = data.calculateTotal() });
-
+  task.checkoutItemsTotal();
 }]);
 
 app.service("backend", function($http, $rootScope, $interval, $timeout, task, data, animate){
@@ -381,6 +358,7 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
 
     const successCallback = (success) => {
       console.log("successfully logged in");
+      animate.hideSignIngPage();
       //set profile information
       this.setUserInfo(success)
       $rootScope.successfullyLoggedIn = true;
@@ -409,7 +387,7 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
       $(".signFormMessage p").text("Thanks For Registering! Try Signing in");
       $('.signFormMessage').fadeIn();
 
-      $rootScope.currentPage = "signin";
+      $rootScope.currentSignPage = "signin";
       $rootScope.signUp = "";
       $rootScope.signIn = "signOption";
     }
@@ -516,165 +494,121 @@ app.service("backend", function($http, $rootScope, $interval, $timeout, task, da
 });
 
 app.service('animate', function($rootScope, $timeout, $interval, data, task){
-  this.homeSlider = (pageIndex) => {
-    //animate slide transition
-    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
-    $timeout(() => {
-      //after slide has covered the page..
-      $rootScope.currentPage = pageIndex;
-      if(pageIndex != 0){
-        task.init();
-        this.customButton();
-      }
-      //finish sliding transition
-      $('.homeNavSlider').css('left', '-100%');
-      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
-    }, 800);
+  this.homeNav = (pageIndex) => {
+    $rootScope.currentPage = pageIndex;
+    const notGoingToHomePage = (pageIndex != 0);
+    if(notGoingToHomePage){
+      task.init();
+      this.navigationBar();
+      this.customButton();
+    } else {
+      $rootScope.currentCompany = 'sewAndSewColors';
+    }
   }
   this.slider = (pageIndex) => {
-    let animationNumber = 1;
-    const $navSlider = $(".navSlider");
-    const animation1 = { left: '0%' };
-    const animation2 = { left: '-100%' };
-
-    const start = () => {
-      if(animationNumber === 1){
-        $rootScope.currentPage = "loading";
-        //reset navigation highlight
-        $(".navOptions").removeClass("navHighlight");
-      } else if (animationNumber === 2) {
-        $rootScope.currentPage = pageIndex;
-        //navigation highlight
-        $(".navOptions[data=" + pageIndex + "]").addClass("navHighlight");
-        this.customButton();
-      }
-    };
-    const complete = () => {
-      if(animationNumber === 1){
-        $navSlider.animate(animation2, options2);
-        animationNumber = 2;
-      } else if (animationNumber === 2) {
-        task.populateImgsOnPage();
-        $navSlider.css('left', '100%');
-      }
-    };
-
-    const options = { duration: 500, start, complete }
-    const options2 = { duration: 500, start, complete };
-
-    $navSlider.animate(animation1, options);
+    $rootScope.pageProducts = "";
+    $rootScope.currentPage = pageIndex;
+    this.customButton();
+    $timeout(() => {
+      task.populateImgsOnPage();
+      //navigation highlight
+      $(".navOptions").removeClass("navHighlight");
+      $(".navOptions[data=" + pageIndex + "]").addClass("navHighlight");
+    }, 10)
   }
   this.creditCardSlider = (pageIndex) => {
-    //animate slide transition
-    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
     $timeout(() => {
-      //after slide has covered the page..
       $rootScope.currentPage = pageIndex;
-      //finish sliding transition
-      $('.homeNavSlider').css('left', '-100%');
-      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
-    }, 800);
+    }, 800).then(() => {
+      $timeout(() => {
+        const allInputs = $('input');
+        const cardInfoSelector = $('input[aria-placeholder="Card number"]');
+        const dateSelector = $('input[aria-placeholder="MM / YY"]');
+        const cvcSelector = $('input[aria-placeholder="CVC"]');
+      }, 1000);
+    });
+  }
+  this.navigationBar = () => {
+    $timeout(() => {
+      $('.navigationBar').on('mouseover', () => {
+        $('.navigationBar p').css('marginBottom', '1em');
+      })
+      $('.navigationBar').on('mouseleave', () => {
+        $('.navigationBar p').css('marginBottom', '0.5em');
+      })
+    })
   }
 
-
   this.toSignFormPage = (page) => {
+    $rootScope.currentCompany = 'sewAndSewColors';
     $rootScope.themeColor = 'rgb(237, 125, 125)';
-    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
     const signup = () => {
-      $rootScope.currentPage = 'signup';
-      $rootScope.currentPage = "signup";
+      $rootScope.currentSignPage = 'signup';
       $rootScope.signUp = "signOption";
       $rootScope.signIn = "";
     }
     const signin = () => {
-      $rootScope.currentPage = 'signin';
-      $rootScope.currentPage = "signin";
+      $rootScope.currentSignPage = 'signin';
       $rootScope.signUp = "";
       $rootScope.signIn = "signOption";
     }
+    (page === 'signup') ? signup() : signin();
+    $('.signUpPage').css('left', '60%');
+
     $timeout(() => {
-      (page === 'signup') ? signup() : signin();
-      $('.homeNavSlider').css('left', '-100%');
-      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
-    }, 800);
+      $rootScope.for1sec = true;
+    }, 500);
   }
-  this.backFromSignFormPage = () => {
-    $('.homeNavSlider').addClass('transitionLeft').css('left', '0%');
-    $timeout(() => {
-      $rootScope.currentPage = 0;
-      $rootScope.landingPageBtnHoverColor = '#430909';
-      $rootScope.landingPageBtnColor = '#ea6262';
-      $('.homeNavSlider').css('left', '-100%');
-      $timeout(() => { $('.homeNavSlider').removeClass('transitionLeft').css('left', '100%'); }, 800);
-    }, 800);
+  this.hideSignIngPage = () => {
+    $('.signUpPage').css('left', '100%');
+    $rootScope.currentSignPage = 'signin';
+    $rootScope.for1sec = false;
   }
   //animate the item to the shopping cart
-  this.itemToShoppingCart = (selector, nodeValue, index) => {
-    $('.shoppingCartBigView').hide();
-    $('.options').css('left', '100vw');
-    $timeout(() => {
-      $('.itemPreview').show();
-      $('body').append('<div data=\'' + nodeValue + 'clone\' class="itemImage" ng-click=\'moveToCart($event)\'></div>')
-      const $selector = $(selector);
-      const $clone = $('.itemImage[data=' + nodeValue + 'clone]');
-      //find target position
-      const cartPostion = $('.cartItemHeading img').position();
+  this.addItemToCart = (data, product) => {
+    $rootScope.clickTracker++;
+    const tracker = $rootScope.clickTracker + product.img;
+    const $productContainer = $('.productContainer[data="' + data + '"]');
 
-      const height = '1.6em';
-      const width = '1.2em';
+    //find target position
+    const cartPostion = $('.cartItemHeading img').position();
+    const height = '1.6em';
+    const width = '1.2em';
 
-      //if the shopping cart drop needs adjustments chang the dx and dy
-      const dx = 94;
-      const dy = 120;
+    //add clone img to page
+    let movingImg = '';
+    movingImg += '<div class="cartImgHolder movingImg">';
+    movingImg += '<img src="' + product.img + '">';
+    movingImg += '</div>';
+    $('html').append(movingImg);
 
-      const left = cartPostion.left + dx;
-      const top = cartPostion.top + dy;
+    const selfPosition = $productContainer.offset();
+    //position clone img
+    const $clone = $('.movingImg');
+    $clone.css('position', 'absolute')
+          .css('top', selfPosition.top)
+          .css('left', selfPosition.left);
 
-      const inBag = top + 20;
+    //if the shopping cart drop needs adjustments chang the dx and dy
+    const dx = 58;
+    const dy = 120;
 
-      const selfPosition = $selector.position();
+    const left = cartPostion.left + dx;
+    const top = cartPostion.top + dy;
+    const inBag = top + 20;
 
-      $clone.css('position', 'absolute')
-            .css('top', selfPosition.top)
-            .css('left', selfPosition.left)
-            .css('height', '27.4em')
-            .addClass('fullBackground')
-            .css('backgroundImage', 'url(' + $rootScope.pageProducts[nodeValue].img + ')');
-
-      const animation = { left: left, top: top, height: height, width: width }
-      const animation2 = { top: inBag, opacity: 0 }
-      const complete = () => {
-        $clone.css('zIndex', -1);
-        $clone.animate(animation2)
-
-        const selectedItem = $rootScope.pageProducts[index];
-
-        //timeout updates the DOM
-        $timeout(() => {
-          $rootScope.clickable = null;
-          if($rootScope.trackItems > data.cartItems.length){
-            //check for a cart dupplicate before adding in order to add a time "x" amount instead of I new item in the cart
-            if(!$rootScope.pauseChartAddition){
-              $rootScope.pauseChartAddition = true;
-              $timeout(() => { $rootScope.pauseChartAddition = false }, 3000);
-              const isADuplicate = task.checkForCartDuplicate(data.cartItems, selectedItem);
-              if(isADuplicate){
-                console.log('is duplicate');
-              }
-              else {
-                data.cartItems.splice(0, 0, selectedItem);
-                data.checkoutItems.splice(0, 0, selectedItem);
-              }
-            }
-          }
-        }, 10);
-        $timeout(() => {
-          $rootScope.clickIt = true;
-        }, 2000);
-      }
-      const options = { duration: 1000, complete }
-      $clone.animate(animation, options);
-    }, 50);
+    const animation = { left: left, top: top, height: height, width: width }
+    const animation2 = { top: inBag, opacity: 0 }
+    const options2  = { complete: function(){
+      const item = { name: product.name, img: product.img, price: product.price}
+      task.addToShoppingCart(item, tracker);
+    }}
+    const complete = () => {
+      $clone.css('zIndex', -1);
+      $clone.animate(animation2, options2)
+    }
+    const options = { duration: 1000, complete }
+    $clone.animate(animation, options);
   }
   this.customButton = () => {
     $('.point').show();
@@ -701,125 +635,19 @@ app.service('animate', function($rootScope, $timeout, $interval, data, task){
     //   $(".imgHolder").animate(animation, options);
     // }, 1000)
   }
-  this.landingPage = () => {
-    //set a watch for homepage
-    $('.lpBtn').click(() => { $rootScope.onHomePage = false })
-
-    const $movingBox = $('.movingBox');
-    const $movingBoxP = $('.movingBoxText');
-    $movingBoxP.css('height', '1.4em');
-    const animationDuration = 500;
-    const intervalDuration = 4500;
-    const moveBoxText = ['Sew & So', 'Brandi Logo', 'Sign Up'];
-    let moveBoxTextIndex = 0;
-    // $('.lpBtn[data=0]').addClass('lpBtnHover');
-
-    $rootScope.landingPageAnimationInterval = $interval(() => {
-
-      //check to see if the interval has finished completing before starting another one
-      if($rootScope.isIntervalInProgress){ return false }
-      $rootScope.isIntervalInProgress = true;
-
-      //stop animation if not on home page
-      if(!$rootScope.onHomePage){
-        $interval.cancel($rootScope.landingPageAnimationInterval);
-        return null
-      }
-
-      const initialFirstPageColor = 'rgb(237, 125, 125)';
-      const initialSecondPageColor = 'rgb(91, 148, 239)';
-      const initialThirdPageColor = 'rgb(153, 153, 153)';
-      const currentPageColor = $('.landingPageColorOne').css('backgroundColor');
-      const animation = { left: '0%' };
-      let switchedColor;
-      let currentColor;
-      let number;
-
-      //animation start function
-      const start = () => {
-        moveBoxTextIndex++;
-        moveBoxTextIndex = (moveBoxTextIndex === moveBoxText.length) ? 0 : moveBoxTextIndex;
-        $movingBox.fadeOut(300);
-        // $('.lpBtn').removeClass('lpBtnHover');
-        // $('.lpBtn[data=' + moveBoxTextIndex + ']').addClass('lpBtnHover');
-        $movingBoxP.css('height', '0em');
-        $movingBox.removeClass('movingBoxIn').addClass('movingBoxOut');
-        $timeout(() => {
-
-          $movingBox.removeClass('movingBoxOut').addClass('movingBoxStart');
-          $movingBoxP.text(moveBoxText[moveBoxTextIndex]);
-          $timeout(() => {
-            $movingBox.fadeIn(750);
-            $movingBox.addClass('movingBoxIn');
-            $timeout(() => {
-              $movingBoxP.css('height', '1.4em');
-            }, 200)
-          }, 100)
-        }, 400);
-
-        if(currentColor === 'firstColor'){
-          $rootScope.landingPageBtnHoverColor = '#0b3474';
-          $rootScope.landingPageBtnColor = '#4585ed';
-          // $rootScope.landingPageBtnBorderColor = '#4485ee';
-        } else if(currentColor === 'secondColor'){
-          $rootScope.landingPageBtnHoverColor = '#444';
-          $rootScope.landingPageBtnColor = '#777';
-          // $rootScope.landingPageBtnBorderColor = '#e74b4b';
-        } else if(currentColor === 'thirdColor'){
-          $rootScope.landingPageBtnHoverColor = '#430909';
-          $rootScope.landingPageBtnColor = '#ea6262';
-          // $rootScope.landingPageBtnBorderColor = '#e74b4b';
-        }
-      }
-
-      //animation complete function
-      const complete = () => {
-        if(number != 3){ $('.homeImg img').fadeIn(500).attr('src', './images/model' + number + '.png'); }
-        if(currentColor === 'firstColor'){ $('.landingPageColorOne').css('backgroundColor', initialSecondPageColor); }
-        else if(currentColor === 'secondColor'){ $('.landingPageColorOne').css('backgroundColor', initialThirdPageColor); }
-        else if(currentColor === 'thirdColor'){ $('.landingPageColorOne').css('backgroundColor', initialFirstPageColor); }
-        $('.landingPageColorTwo').css('left', '100%').css('backgroundColor', switchedColor);
-        $rootScope.isIntervalInProgress = false;
-        // if(currentColor != 'secondColor'){ $rootScope.isIntervalInProgress = false; }
-      }
-
-      //animation options function
-      const options = { duration: animationDuration, start: start, complete: complete };
-
-      //start the animation
-      const startAnimation = (color, imgNumber) => {
-        currentColor = color;
-        number = imgNumber;
-        if(color === 'firstColor'){ switchedColor = initialThirdPageColor; }
-        else if(color === 'secondColor'){ switchedColor = initialFirstPageColor; }
-        else if(color === 'thirdColor'){ switchedColor = initialSecondPageColor; }
-        $('.homeImg img').fadeOut(400);
-        $('.landingPageColorTwo').animate(animation, options);
-      }
-
-      //start the animation
-      if(currentPageColor === initialFirstPageColor){ startAnimation('firstColor', 2); }
-      else if(currentPageColor === initialSecondPageColor){ startAnimation('secondColor', 3); }
-      else if(currentPageColor === initialThirdPageColor){ startAnimation('thirdColor', 1); }
-
-    }, intervalDuration)
-  }
 });
 
 app.service('data', function($rootScope, $interval, $timeout){
   this.setPageProducts = (pageIndex) => {
-    let pageProducts = (pageIndex === 1) ? $rootScope.sew_products : $rootScope.crochet_products;
+    let pageProducts =  $rootScope.sew_products;
     return pageProducts;
   }
 
-
-
   this.navOptions = ['HOME', 'DESIGNERS', 'CONTACT', 'CHECKOUT'],
   this.cartItems = [],
-  this.checkoutItems = [],
   this.getCartLength = () => {
     $interval(() => {
-      $rootScope.cartQuantity = this.cartItems.length;
+      $rootScope.cartQuantity = $rootScope.shoppingCartItems.length;
     })
   }
   this.filters = {
@@ -832,40 +660,9 @@ app.service('data', function($rootScope, $interval, $timeout){
     ],
     sizes: ['XS', 'S', 'M', 'L']
   }
-  this.calculateTotal = () => {
-    if(this.cartItems.length > 0){
-      let total = 0;
-      this.cartItems.map((data) => {
-        let multiple = data["multiple"] ? data["multiple"] : 1;
-        const sliceString = data.price.slice(1);
-        const toInt = parseInt(sliceString)
-        total += (toInt * multiple);
-      })
-      return total;
-    } else {
-      return 0;
-    }
-  }
 });
 
 app.service('task', function($rootScope, $interval, $timeout, data){
-  this.setThemeColor = (pageIndex) => {
-    let themeColorObj = {};
-    if(pageIndex === 1){
-      themeColorObj.themeColor = $rootScope.redThemeColor;
-      themeColorObj.borderThemeColor = $rootScope.redBorderThemeColor;
-    } else if(pageIndex === 2){
-      themeColorObj.themeColor = $rootScope.blueThemeColor;
-      themeColorObj.borderThemeColor = $rootScope.blueBorderThemeColor;
-    }
-    return themeColorObj;
-  }
-  this.setCostIcon = (pageIndex) => {
-    let customIcon;
-    if(pageIndex === 1){ customIcon = "./images/sewing.png"; }
-    else if(pageIndex === 2){ customIcon = "./images/crochet.png"; }
-    return customIcon;
-  }
   this.hasEmptyFieldCheck = (obj) => {
     const values = Object.values(obj);
     const hasEmptyField = values.includes("") || values.includes(undefined);
@@ -880,161 +677,92 @@ app.service('task', function($rootScope, $interval, $timeout, data){
     }
     return arr;
   }
-  this.checkForCartDuplicate = (cartItems, obj) => {
-    //if cart is empty return null
-    if(cartItems.length === 0){ return false }
-    let duplicate = false;
-    const id = obj.id;
-    cartItems.map((data, index) => {
-      if(data.id === id){
-        this.increaseDoubleNum(index);
-        duplicate = true;
-      }
-    });
-    return duplicate;
-  }
-  this.increaseDoubleNum = (index) => {
-    if(data.cartItems[index]["multiple"]){
-      data.cartItems[index]["multiple"]++;
-    } else {
-      data.cartItems[index]["multiple"] = 2;
+  this.decrement = (item) => {
+    let arrayIndex;
+    const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
+    $rootScope.shoppingCartItems[index].quantity--;
+    if($rootScope.shoppingCartItems[index].quantity === 0){
+      $rootScope.shoppingCartItems.splice(index, 1);
+      $rootScope.individualItemsInShoppingCart.map((img, i) => {
+        if(img === item.img){
+          arrayIndex = i;
+        }
+      })
+      $rootScope.individualItemsInShoppingCart.splice(arrayIndex, 1);
     }
   }
-  this.removeMultipleFromProductData = (index) => {
-    const id = data.cartItems[index]["id"];
-    $rootScope.sew_products.map((data, index) => {
-      const idsMatch = (data.id === id);
-      const hasMultipleField = (data["multiple"] != undefined);
-      if(idsMatch && hasMultipleField){
-        delete $rootScope.sew_products[index]['multiple'];
-      }
-    })
-    $rootScope.crochet_products.map((data, index) => {
-      const idsMatch = (data.id === id);
-      const hasMultipleField = (data["multiple"] != undefined);
-      if(idsMatch && hasMultipleField){
-        delete $rootScope.crochet_products[index]['multiple'];
-      }
-    })
-  }
-  this.decrement = (item) => {
-    const id = item.id;
-
-    //check sew_products
-    $rootScope.sew_products.map((dataValue, index) => {
-      const idsMatch = (dataValue.id === id);
-      const hasMultipleFieldAndGreaterThanOne = (dataValue["multiple"] != undefined) && (dataValue["multiple"] > 1);
-      if(idsMatch){
-        if(hasMultipleFieldAndGreaterThanOne){
-
-          $rootScope.sew_products[index]['multiple']--;
-          if($rootScope.sew_products[index]['multiple'] === 0){
-            data.cartItems.map((dataVal, index, array) => {
-              if(dataVal === $rootScope.sew_products[index]){
-                //go through each of the products to mach the dataval
-                console.log(data.cartItems);
-                data.cartItems.splice(index, 1);
-                console.log(data.cartItems);
-              }
-            })
-          }
-
-        } else if (!hasMultipleFieldAndGreaterThanOne) {
-
-          data.cartItems.map((dataVal, index) => {
-            if(dataVal.id === id){
-              const before = data.cartItems;
-              data.cartItems.splice(index, 1);
-              const after = data.cartItems;
-            }
-          })
-
-        }
-
-      }
-    })
-
-    //check crochet_products
-    $rootScope.crochet_products.map((dataValue, index) => {
-      const idsMatch = (dataValue.id === id);
-      const hasMultipleFieldAndGreaterThanOne = (dataValue["multiple"] != undefined) && (dataValue["multiple"] > 1);
-      if(idsMatch){
-        if(hasMultipleFieldAndGreaterThanOne){
-
-          $rootScope.crochet_products[index]['multiple']--;
-          if($rootScope.crochet_products[index]['multiple'] === 0){
-            data.cartItems.map((dataVal, index, array) => {
-              if(dataVal === $rootScope.crochet_products[index]){
-                //go through each of the products to mach the dataval
-                console.log(data.cartItems);
-                data.cartItems.splice(index, 1);
-                console.log(data.cartItems);
-              }
-            })
-          }
-
-        } else if (!hasMultipleFieldAndGreaterThanOne) {
-
-          data.cartItems.map((dataVal, index) => {
-            if(dataVal.id === id){
-              const before = data.cartItems;
-              data.cartItems.splice(index, 1);
-              const after = data.cartItems;
-            }
-          })
-
-        }
-
-      }
-    })
-
-  }
   this.increment = (item) => {
-    const id = item.id;
-
-    //check sew_products
-    $rootScope.sew_products.map((dataValue, index) => {
-      const idsMatch = (dataValue.id === id);
-      const hasMultipleField = (dataValue["multiple"] != undefined);
-      if(idsMatch){
-        if(hasMultipleField){
-
-          $rootScope.sew_products[index]["multiple"]++;
-
-
-        } else if (!hasMultipleField) {
-
-          $rootScope.sew_products[index]["multiple"] = 2;
-
-        }
-
-      }
-    })
-
-    //check crochet_products
-    $rootScope.crochet_products.map((dataValue, index) => {
-      const idsMatch = (dataValue.id === id);
-      const hasMultipleField = (dataValue["multiple"] != undefined);
-      if(idsMatch){
-        if(hasMultipleField){
-
-          $rootScope.crochet_products[index]["multiple"]++;
-
-
-        } else if (!hasMultipleField) {
-
-          $rootScope.crochet_products[index]["multiple"] = 2;
-
-        }
-
-      }
-    })
-
+    const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
+    $rootScope.shoppingCartItems[index].quantity++;
   }
+  this.findIndexInArrayByIndex = (index, parentArray) => {
+    let foundIndex = 'not found';
+    parentArray.map((item, i) => {
+      if(item.index == index){
+        foundIndex = i;
+      }
+    })
+    return foundIndex;
+  }
+  this.addToShoppingCart = (item, tracker) => {
+    //prevent unrequested multiple carts
+    if($rootScope.addedTrackers.includes(tracker)){
+      return null;
+    }
 
-  this.init = (themeColor) => {
+    $rootScope.addedTrackers.push(tracker);
+    const isInShoppingCart = $rootScope.individualItemsInShoppingCart.includes(item.img);
+    if(isInShoppingCart){
+      $rootScope.shoppingCartItems.map((shoppingCartItem) => {
+        if(shoppingCartItem.img === item.img){
+          shoppingCartItem.quantity++;
+        }
+      })
+    } else {
+      const img = item.img;
+      const price = item.price;
+      const name = item.name;
+      const imgObj = { name: name, img: img, price: price, quantity: 1, index: $rootScope.cartIndex }
+      $rootScope.cartIndex++;
+      $rootScope.shoppingCartItems.push(imgObj);
+      $rootScope.individualItemsInShoppingCart.push(img);
+    }
+  }
+  this.removeItemFromShoppingCart = (item) => {
+    let arrayIndex;
+    const index = this.findIndexInArrayByIndex(item.index, $rootScope.shoppingCartItems);
+    $rootScope.shoppingCartItems.splice(index, 1);
+    $rootScope.individualItemsInShoppingCart.map((img, i) => {
+      if(img === item.img){
+        arrayIndex = i;
+      }
+    })
+    $rootScope.individualItemsInShoppingCart.splice(arrayIndex, 1);
+  }
+  this.checkoutItemsTotal = () => {
+    const calculateTotal = () => {
+      let total = 0;
+      $rootScope.shoppingCartItems.map((item) => {
+        const price = item.price.substring(1, item.price.length);
+        total += (parseInt(price) * parseInt(item.quantity));
+      })
+      $rootScope.checkoutItemsTotal = total;
+    }
+    $interval(() => {
+      calculateTotal();
+    })
+  }
+  this.init = () => {
+    //hide the gallery view on load
     $('.shoppingCartBigView').hide();
+    //fill the page with current company products
     this.populateImgsOnPage();
+    //this animates the custom button when hovering over a product
+    this.changeCustomizeOpacityAnimation();
+    //hide the sign in message field if it is still showing on the sign in page
+    $('.signFormMessage').hide();
+  }
+  this.changeCustomizeOpacityAnimation = () => {
     let opacity = true;
     $interval(() => {
       if(opacity){
@@ -1045,45 +773,87 @@ app.service('task', function($rootScope, $interval, $timeout, data){
         opacity = !opacity;
       }
     }, 1000);
-    $('.signFormMessage').hide();
-    // $timeout(() => { $('.navOptions[data=1]').css('color', themeColor) });
   }
   this.populateImgsOnPage = () => {
     if(!$rootScope.pageProducts){ return null }
     const imgLength = $rootScope.pageProducts.length;
+    const amountToFadeIn = 8;
     let index = 0;
     const imgFill = $interval(() => {
-      if(index === imgLength){
+      if((index === imgLength) || (index === amountToFadeIn)){
+        $('.itemImg').css('opacity', 1).hide().show().css('left', 0);
         $interval.cancel(imgFill);
-      } else {
+      } else if (index < amountToFadeIn) {
         $('.itemImg[data=' + index + ']').css('opacity', 1).hide().fadeIn().css('left', 0);
         index++
       }
-    }, 200);
+    }, 150);
   }
-
-});
-
-app.service('navigate', function($rootScope, $timeout, data, animate, task){
-  this.closeView = () => {
-
+  this.toggleView = () => {
+    const $productContainer = $('.productContainer');
+    const firstItemIndex = 0;
+    const secondItemIndex = 1;
+    if(!$rootScope.itemsOpen){
+      //hide all item accept the first two
+      $('.itemSection').addClass('fixContent');
+      $productContainer.map((index, item) => {
+        if(index != firstItemIndex && index!= secondItemIndex){
+          $('.productContainer[data="' + index + '"]').addClass('removeItem');
+        }
+      })
+      $rootScope.itemsOpen = !$rootScope.itemsOpen;
+      $('.productContainer').css('width', '36em');
+      $('.productDescriptionHolder').css('left', 0);
+      $timeout(() => {
+        $('.productImgHolder').addClass('rotate90');
+        $('.hoverDescription').addClass('rotate90');
+      }, 300).then(() => {
+        $timeout(() => {
+          $('.itemSection').removeClass('fixContent');
+          $('.productContainer').removeClass('removeItem');
+          $('.cartImgHolder').css('zIndex', 1).removeClass('rotate90');
+        }, 300);
+      });
+    } else {
+      $('.cartImgHolder').addClass('rotate90');
+      $('.itemSection').addClass('fixContent');
+      $productContainer.map((index, item) => {
+        if(index != firstItemIndex && index!= secondItemIndex){
+          $('.productContainer[data="' + index + '"]').addClass('removeItem');
+        }
+      })
+      $timeout(() => {
+        $('.hoverButtons').hide();
+        $('.cartImgHolder').css('zIndex', -1);
+        $('.productImgHolder').removeClass('rotate90');
+        $('.hoverDescription').removeClass('rotate90');
+        $rootScope.itemsOpen = !$rootScope.itemsOpen;
+        $('.productContainer').css('width', '18em');
+        $('.productDescriptionHolder').css('left', '18em');
+      }, 300).then(() => {
+        $timeout(() => {
+          $('.hoverButtons').show();
+        }, 300).then(() => {
+          $timeout(() => {
+            $('.itemSection').removeClass('fixContent');
+            $('.productContainer').removeClass('removeItem');
+          }, 200);
+        });
+      });
+    }
   }
-  this.closeViewLeftClick = () => {
-
+  this.showProductOptions = (data) => {
+    if(!$rootScope.itemsOpen){
+      $('.hoverDescription[data="' + data + '"]').addClass('showDescripton');
+      $('.hoverButtons[data="' + data + '"]').removeClass('behindImg');
+      $('.hoverClearBox[data="' + data + '"]').removeClass('behindImg');
+    }
   }
-  this.closeViewRightClick = () => {
-
-  }
-});
-
-app.directive("tocart", function($rootScope) {
-  return {
-    template: '<div data={{$index}} disableclick class="addToCartBtn flexRow pointer" ng-click="moveToCart($event, $index)"><p data={{$index}} disableclick class="addToChartText" ng-click="moveToCart($event, $index)">ADD TO CART</p></div>'
-  }
-});
-
-app.directive("view", function($rootScope) {
-  return {
-    template: '<div data={{$index}} disableclick class="viewBtn flexRow pointer"><p data={{$index}} disableclick class="addToChartText">VIEW GALLERY</p></div>'
+  this.hideProductOptions = (data) => {
+    if(!$rootScope.itemsOpen){
+      $('.hoverDescription[data="' + data + '"]').removeClass('showDescripton');
+      $('.hoverButtons[data="' + data + '"]').addClass('behindImg');
+      $('.hoverClearBox[data="' + data + '"]').addClass('behindImg');
+    }
   }
 });

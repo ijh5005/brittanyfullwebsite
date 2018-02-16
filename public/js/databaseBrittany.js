@@ -1,56 +1,67 @@
 let sew_products = [
   {
     designer: 1,
-    name: 'DROP DEAD RED SHOES',
+    name: 'SWAG',
     price: '$38',
-    img: './images/c1.png',
-    imgSlideShow: ['./images/c1.png', './images/c2.png', './images/c3.png',],
-    desciption: 'summer shoes',
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
+    img: './images/c11.png',
+    imgSlideShow: ['./images/c11.png', './images/c12.png', './images/c13.png',],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'
   },
   {
     designer: 1,
-    name: 'DROP DEAD RED SHOES',
+    name: 'SWAG',
     price: '$36',
-    img: './images/c1.png',
-    imgSlideShow: ['./images/c1.png', './images/c4.png', './images/c5.png',],
-    desciption: 'summer shoes',
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
-  },
+    img: './images/c21.png',
+    imgSlideShow: ['./images/c21.png', './images/c22.png', './images/c23.png',],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  },
   {
     designer: 1,
-    name: 'DROP DEAD RED SHOES',
+    name: 'SWAG',
     price: '$39',
-    img: './images/c1.png',
-    imgSlideShow: ['./images/c1.png', './images/c6.png', './images/c2.png',],
-    desciption: 'summer shoes',
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
-  },
+    img: './images/c31.png',
+    imgSlideShow: ['./images/c31.png', './images/c32.png', './images/c33.png',],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  },
   {
     designer: 1,
-    name: 'FANCY SHOES',
+    name: 'SWAG',
     price: '$60',
-    img: './images/c2.png',
-    imgSlideShow: ['./images/c2.png', './images/c4.png', './images/c6.png'],
-    desciption: 'fancy fancy shoes',
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
-  },
+    img: './images/c41.png',
+    imgSlideShow: ['./images/c41.png', './images/c42.png', './images/c43.png'],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  },
   {
     designer: 1,
-    name: 'FANCY SHOES',
+    name: 'SWAG',
     price: '$60',
-    img: './images/c2.png',
-    imgSlideShow: ['./images/c2.png', './images/c5.png', './images/c4.png'],
-    desciption: 'fancy fancy shoes',
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
-  },
+    img: './images/c51.png',
+    imgSlideShow: ['./images/c51.png', './images/c52.png', './images/c53.png'],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  },
   {
     designer: 1,
-    name: 'FANCY SHOES',
+    name: 'SWAG',
     price: '$60',
-    img: './images/c2.png',
-    imgSlideShow: ['./images/c2.png', './images/c3.png', './images/c4.png'],
-    desciption: 'fancy fancy shoes',
-    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum, convallis vitae nibh at, dapibus faucibus lectus. Sed vitae libero vehicula, feugiat sem eget, tincidunt dolor.'
-  }
+    img: './images/c61.png',
+    imgSlideShow: ['./images/c61.png', './images/c62.png', './images/c63.png'],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  },
+  {
+    designer: 1,
+    name: 'SWAG',
+    price: '$60',
+    img: './images/c51.png',
+    imgSlideShow: ['./images/c51.png', './images/c52.png', './images/c53.png'],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  },
+  {
+    designer: 1,
+    name: 'SWAG',
+    price: '$60',
+    img: './images/c61.png',
+    imgSlideShow: ['./images/c61.png', './images/c62.png', './images/c63.png'],
+    desciption: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    details: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultricies tellus lacus, quis iaculis magna lobortis at. Vestibulum ante ipsum.'  }
 ];
