@@ -1151,6 +1151,13 @@ label {
   width: 3em;
 }
 
+.increment:hover,
+.decrement:hover {
+  background-color: #ed7d7d;
+  color: #fff;
+  border-color: #fff;
+}
+
 .quantityNumber p,
 .increment p,
 .decrement p {
