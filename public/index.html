@@ -54,13 +54,51 @@
 
     <!--        LANDING PAGE         -->
     <div class="landingPage flexRow" ng-if="currentPage === 0" ng-click='hideSignInPage()'>
+      <div id="background" class="flexRow">
+        <div id="rightSideB" class="flexCol">
+          <div id="rightSideBTop" class="flexRow">
+            <div id="rightSideBTopRight" class="flexCol">
+              <div id="rightSideBTopRightTop"></div>
+              <div id="rightSideBTopRightBottom"></div>
+            </div>
+            <div id="rightSideBTopLeft" class="flexCol">
+              <div id="rightSideBTopLeftTop"></div>
+              <div id="rightSideBTopLeftBottom"></div>
+            </div>
+          </div>
+          <div id="rightSideBBottom" class="flexRow">
+            <div id="rightSideBBottomLeft" class=""></div>
+            <div id="rightSideBBottomRight" class=""></div>
+          </div>
+        </div>
+        <div id="leftSideB" class="flexRow">
+          <div id="leftSideBLeft"></div>
+          <div id="leftSideBRight" class="flexCol">
+            <div id="leftSideBRightTop" class="flexRow">
+              <div id="leftSideBRightTopLeft" class="flexCol">
+                <div id="leftSideBRightTopLeftTop"></div>
+                <div id="leftSideBRightTopLeftBottom"></div>
+              </div>
+              <div id="leftSideBRightTopRight" class="flexCol">
+                <div id="leftSideBRightTopRightTop"></div>
+                <div id="leftSideBRightTopRightBottom"></div>
+              </div>
+            </div>
+            <div id="leftSideBRightBottom"></div>
+          </div>
+        </div>
+      </div>
 
       <div id="homePageHolder" class="flexRow">
         <div id="homePage">
           <div id="homePageTop" class="flexRow">
             <div id="homePageTopLeft" class="flexCol">
               <div id="homePageTopLeftTopBar"></div>
-              <div id="homePageTopLeftBottom"></div>
+              <div id="homePageTopLeftBottom" class="flexCol">
+                <div class="homePageIcons"><img src="./images/bagIcon.png" alt=""></div>
+                <div class="homePageIcons"><img src="./images/bedIcon.png" alt=""></div>
+                <div class="homePageIcons"><img src="./images/shoeIcon.png" alt=""></div>
+              </div>
             </div>
             <div id="homePageTopRight" class="pointer" ng-click='logIn(1)'>
               <div id="homePageTopRightTopBar"></div>
